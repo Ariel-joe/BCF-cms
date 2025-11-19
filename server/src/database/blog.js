@@ -10,10 +10,10 @@ const blogSchema = new Schema(
         content: [
             {
                 subtitle: { type: String, required: true, trim: true },
-                paragraphs: [{ type: String, required: true, trim: true }],
+                paragraph: { type: String, required: true, trim: true },
             },
         ],
-        tags: [{ type: String, required: true, trim: true }],
+        tags: [{ type: String, required: true }],
         pdf: {
             title: { type: String, trim: true },
             url: { type: String },
