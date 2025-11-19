@@ -2,28 +2,16 @@ import { model, Schema } from "mongoose";
 
 const authSlugSchema = new Schema(
     {
-        name: {
-            type: String,
-            required: true,
-            unique: true,
-            trim: true,
-            // e.g., "Finance Director"
-        },
-
+        // e.g., "Finance Director"
+        name: { type: String, required: true, unique: true, trim: true },
         slug: {
             type: String,
             required: true,
             unique: true,
             lowercase: true,
             trim: true,
-            // e.g., 1824 for "finance_director" - immutable identifier for code checks
-        },
-
-        description: {
-            type: String,
-            trim: true,
-        },
-
+        }, // e.g., 1824 for "finance_director" - immutable identifier for code checks
+        description: { type: String, trim: true },
         // The specific capabilities this role has.
         // Instead of checking "Is this user an admin?", you check "Does this user have 'view_financials'?"
         permissions: [
@@ -32,7 +20,6 @@ const authSlugSchema = new Schema(
                 trim: true,
             },
         ],
-
         isSystemRole: {
             type: Boolean,
             default: false,

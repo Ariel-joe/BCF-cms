@@ -1,6 +1,5 @@
 import { model, Schema } from "mongoose";
 
-// TODO: use the virtual schema for the image.
 const userSchema = new Schema(
     {
         googleId: { type: String },

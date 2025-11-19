@@ -13,6 +13,6 @@ const bioDataSchema = new Schema(
     }
 );
 
-const BioData = model("bio", bioDataSchema);
+const BioData = model("bioData", bioDataSchema);
 
 export { BioData };
