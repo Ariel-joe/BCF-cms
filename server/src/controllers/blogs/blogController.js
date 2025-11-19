@@ -20,10 +20,10 @@ export const createBlog = async (req, res) => {
 
         // if the user is allowed, he does the following.
 
-        //TODO: process image to cloudinary to get the link
+        //process image to cloudinary to get the link
         const imageUrl = async () => {
             if (!image) throw new Error("no file found!");
-            const result = await cloudinary.uploader.upload(item.path, {
+            const result = await cloudinary.uploader.upload(image.path, {
                 resource_type: "image",
             });
 
@@ -34,7 +34,7 @@ export const createBlog = async (req, res) => {
         const newBlog = await Blog.create(
             [
                 {
-                    image,
+                    image: imageUrl,
                     datePublished: Date.now(),
                     title,
                     summary,
