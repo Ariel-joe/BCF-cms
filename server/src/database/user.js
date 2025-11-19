@@ -1,0 +1,17 @@
+import { model, Schema } from "mongoose";
+
+const userSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        googleId: {tpe: String},
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+    },
+    {
+        timestamps: true,
+    }
+);
+
+const User = model("user", userSchema);
+
+export { User };
