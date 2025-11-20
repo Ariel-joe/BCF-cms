@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { User } from "../../database/user.js";
 import { Blog } from "../../database/blog.js";
 import { StatusCodes } from "http-status-codes";
-import { v2 as cloudinary } from "cloudinary";
 
 // create a blog
 
@@ -46,7 +45,7 @@ export const createBlog = async (req, res) => {
                         title: pdfTitle,
                         url: pdfUrl,
                     },
-                    author: user.name,
+                    author: user,
                 },
             ],
             { session }
@@ -65,7 +64,7 @@ export const createBlog = async (req, res) => {
         session.abortTransaction();
         console.log(error);
 
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             messsage: "Please try again!",
         });
