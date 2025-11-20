@@ -11,7 +11,7 @@ export const createBlog = async (req, res) => {
     try {
         session.startTransaction();
 
-        const { image, title, summary, content, tags, pdf } = req.body;
+        const { title, summary, content, tags, pdfTitle } = req.body;
 
         const userId = req.user.id;
         const user = await User.findOne({ _id: userId }).session(session);
@@ -19,16 +19,15 @@ export const createBlog = async (req, res) => {
         //TODO: Check the slug for authorization
 
         // if the user is allowed, he does the following.
+        const imageUrl =
+            req.files?.image && req.files.image.length > 0
+                ? req.files.image[0].path
+                : null;
 
-        //process image to cloudinary to get the link
-        const imageUrl = async () => {
-            if (!image) throw new Error("no file found!");
-            const result = await cloudinary.uploader.upload(image.path, {
-                resource_type: "image",
-            });
-
-            return result.secure_url;
-        };
+        const pdfUrl =
+            req.files?.pdf && req.files.pdf.length > 0
+                ? req.files.pdf[0].path
+                : null;
         //TODO: loop the content, to upload the subtitle and paragraph
         // TODO: also upload the pdf to get the link
         const newBlog = await Blog.create(
@@ -38,14 +37,23 @@ export const createBlog = async (req, res) => {
                     datePublished: Date.now(),
                     title,
                     summary,
-                    content,
-                    tags,
-                    pdf,
+                    content: content.map((item) => ({
+                        subtitle: item.subtitle,
+                        paragraph: item.paragraph,
+                    })),
+                    tags: tags.map((item) => item),
+                    pdf: {
+                        title: pdfTitle,
+                        url: pdfUrl,
+                    },
                     author: user.name,
                 },
             ],
             { session }
         );
+
+        if (!newBlog) throw new Error("cannot create the blog!");
+        
 
         session.commitTransaction();
 

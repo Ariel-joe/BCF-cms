@@ -8,6 +8,7 @@ import MongoStore from "connect-mongo";
 import passport from "./controllers/Auth/passport-google.js";
 import { authRouter } from "./routes/v1/authRouter.js";
 import { authMiddleware } from "./middleware/authMiddleware.js";
+import { blogRouter } from "./routes/v1/blogRouter.js";
 
 const app = express();
 
@@ -40,12 +41,13 @@ app.use(
     })
 );
 
+
 // Initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
 
 // routes
-app.use("/api/v1", authRouter);
+app.use("/api/v1", authRouter, blogRouter);
 
 // Passport Google OAuth routes
 app.get("/auth/google",
