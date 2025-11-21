@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import {  Outfit } from "next/font/google";
+import {  Outfit, Montserrat } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
-const outfitSans = Outfit({
-  variable: "--font-outfit",
+const mont = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
@@ -19,12 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${outfitSans.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+      <html lang="en">
+          <body className={`${mont.variable} antialiased`}>
+              {children}
+              <Toaster position="top-center" richColors />
+          </body>
+      </html>
   );
 }

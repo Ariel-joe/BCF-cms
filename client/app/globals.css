@@ -3,20 +3,19 @@
 
 @layer base {
     @theme {
-      --color-secondary-purple: #7b4cff;
-      --color-tertiary-purple: #bcaeff;
+      --color-page-title: #375cff;
+      --color-sec-btn: #5c88ff;
       --color-text-purple: #25076e;
       --color-button-blue: #081bee;
       --color-light-blue: #375cff;
     }
   }
-  
+
   @layer base {
     body {
-      font-family: "Outfit", sans-serif;
+      font-family: "Montserrat", sans-serif;;
     }
   }
-
 
 @custom-variant dark (&:is(.dark *));
 
