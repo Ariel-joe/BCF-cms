@@ -19,6 +19,7 @@ import { FileUpload } from "@/components/file-upload";
 import { ContentBlockForm } from "@/components/content-block-form";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useBlogStore } from "@/stores/blogStore";
 
 interface ContentBlock {
     id: string;
@@ -37,6 +38,8 @@ interface BlogFormData {
 }
 
 export function BlogForm() {
+    const { postBlog } = useBlogStore();
+
     const [formData, setFormData] = useState<BlogFormData>({
         title: "",
         summary: "",
@@ -199,6 +202,7 @@ export function BlogForm() {
                             value={formData.title}
                             onChange={handleTitleChange}
                             className="mt-2 py-5"
+                            required
                         />
                     </div>
                     <div>
@@ -210,6 +214,7 @@ export function BlogForm() {
                             onChange={handleSummaryChange}
                             rows={4}
                             className="mt-2 rounded-none"
+                            required
                         />
                     </div>
                 </CardContent>
@@ -229,6 +234,7 @@ export function BlogForm() {
                         value={formData.tags}
                         onChange={handleTagsChange}
                         className="py-5"
+                        required
                     />
                 </CardContent>
             </Card>
@@ -310,7 +316,10 @@ export function BlogForm() {
                 <Button type="button" variant="outline">
                     Save as Draft
                 </Button>
-                <Button type="submit" className="px-8 bg-button-blue hover:bg-light-blue">
+                <Button
+                    type="submit"
+                    className="px-8 bg-button-blue hover:bg-light-blue"
+                >
                     Publish Post
                 </Button>
             </div>
