@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-const useBlogStore = create(() => ({
+const useBlogStore = create((set) => ({
+    blogs: [],
     postBlog: async (blogData) => {
         try {
             const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/blog/create`;
@@ -77,6 +78,41 @@ const useBlogStore = create(() => ({
                     json = await res.json();
                 } catch (err) {
                     console.error("Failed to parse blog create response", err);
+                }
+            }
+
+            if (!res.ok) {
+                return { ok: false, status: res.status, ...json };
+            }
+
+            return { ok: true, status: res.status, ...json };
+        } catch (error) {
+            console.error(error);
+            return {
+                ok: false,
+                status: 0,
+                message: error?.message || "Network error",
+            };
+        }
+    },
+
+    allBlogs: async () => {
+        try {
+            const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/blog/`;
+            const res = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+            const contentType = res.headers.get("content-type") || "";
+            if (contentType.includes("application/json")) {
+                try {
+                    const { data } = await res.json();
+                    set({ blogs: data || [] });
+                } catch (err) {
+                    console.error("Failed to parse allBlogs response", err);
                 }
             }
 
