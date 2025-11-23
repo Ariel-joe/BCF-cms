@@ -1,34 +1,41 @@
 import mongoose from "mongoose";
-import { User } from "../../database/user.js";
 import { Blog } from "../../database/blog.js";
-import { StatusCodes } from "http-status-codes";
-
-// create a blog
+import { User } from "../../database/user.js";
 
 export const createBlog = async (req, res) => {
     const session = await mongoose.startSession();
     try {
         session.startTransaction();
+        const { title, summary, pdfTitle } = req.body;
 
-        const { title, summary, content, tags, pdfTitle } = req.body;
+        // Parse content from JSON string
+        let content;
+        try {
+            content = JSON.parse(req.body.content);
+        } catch (error) {
+            throw new Error("Invalid content format");
+        }
+
+        // tags[] is already parsed by Express as an array
+        const tags = req.body["tags[]"] || req.body.tags || [];
 
         const userId = req.user.id;
         const user = await User.findOne({ _id: userId }).session(session);
 
-        //TODO: Check the slug for authorization
-
-        // if the user is allowed, he does the following.
         const imageUrl =
             req.files?.image && req.files.image.length > 0
                 ? req.files.image[0].path
                 : null;
 
+        if (!imageUrl) {
+            throw new Error("Featured image is required");
+        }
+
         const pdfUrl =
             req.files?.pdf && req.files.pdf.length > 0
                 ? req.files.pdf[0].path
                 : null;
-        //TODO: loop the content, to upload the subtitle and paragraph
-        // TODO: also upload the pdf to get the link
+
         const newBlog = await Blog.create(
             [
                 {
@@ -36,37 +43,36 @@ export const createBlog = async (req, res) => {
                     datePublished: Date.now(),
                     title,
                     summary,
-                    content: content.map((item) => ({
-                        subtitle: item.subtitle,
-                        paragraph: item.paragraph,
-                    })),
-                    tags: tags.map((item) => item),
+                    content: content,
+                    tags: Array.isArray(tags) ? tags : [tags],
                     pdf: {
-                        title: pdfTitle,
-                        url: pdfUrl,
+                        title: pdfTitle || null,
+                        url: pdfUrl || null,
                     },
-                    author: user,
+                    author: user._id,
                 },
             ],
             { session }
         );
 
-        if (!newBlog) throw new Error("cannot create the blog!");
-        
+        if (!newBlog) {
+            throw new Error("Cannot create the blog!");
+        }
 
-        session.commitTransaction();
+        await session.commitTransaction();
 
-        res.status(StatusCodes.CREATED).json({
+        return res.status(StatusCodes.CREATED).json({
             success: true,
-            message: "blog created successfull",
+            message: "Blog created successfully",
+            data: newBlog[0],
         });
     } catch (error) {
-        session.abortTransaction();
-        console.log(error);
+        await session.abortTransaction();
+        console.error("Blog creation error:", error);
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
-            messsage: "Please try again!",
+            message: error.message || "Please try again!",
         });
     } finally {
         session.endSession();

@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +32,7 @@ interface BlogFormData {
     featuredImage: File | null;
     featuredImagePreview: string | null;
     pdfFile: File | null;
+    pdfTitle: string;
     tags: string;
     content: ContentBlock[];
 }
@@ -46,6 +46,7 @@ export function BlogForm() {
         featuredImage: null,
         featuredImagePreview: null,
         pdfFile: null,
+        pdfTitle: "",
         tags: "",
         content: [
             {
@@ -55,6 +56,7 @@ export function BlogForm() {
             },
         ],
     });
+    const [loading, setLoading] = useState(false);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, title: e.target.value });
@@ -101,7 +103,7 @@ export function BlogForm() {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Validate required fields
@@ -132,26 +134,80 @@ export function BlogForm() {
             return;
         }
 
-        // Convert form data to JSON format
-        const blogPost = {
-            title: formData.title,
-            summary: formData.summary,
-            tags: formData.tags
-                .split(",")
-                .map((tag) => tag.trim())
-                .filter((tag) => tag),
-            featuredImage: formData.featuredImagePreview,
-            content: formData.content.map((block) => ({
-                subtitle: block.subtitle,
-                paragraphs: block.paragraphs.filter((p) => p.trim()),
-            })),
-            ...(formData.pdfFile && { pdfFile: formData.pdfFile.name }),
-        };
+        // Build FormData matching backend expectations
+        const fd = new FormData();
+        fd.append("title", formData.title.trim());
+        fd.append("summary", formData.summary.trim());
 
-        // TODO: use the blogPost variable to connect to zustand
+        // Parse tags from comma-separated string to array
+        const tagsArray = formData.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean);
 
-        console.log("Blog Post Data:", blogPost);
-        toast.success("Blog post prepared! Check console for JSON data.");
+        // Send as tags[] so Express parses it as an array
+        if (tagsArray.length > 0) {
+            tagsArray.forEach((tag) => fd.append("tags[]", tag));
+        }
+
+        // Clean content: remove empty paragraphs and id field
+        const contentArray = formData.content
+            .map((block) => ({
+                subtitle: block.subtitle.trim(),
+                paragraphs: block.paragraphs
+                    .map((p) => p.trim())
+                    .filter(Boolean),
+            }))
+            .filter((block) => block.subtitle && block.paragraphs.length > 0);
+
+        // Send content as JSON string
+        fd.append("content", JSON.stringify(contentArray));
+
+        // Append image file (required)
+        if (formData.featuredImage) {
+            fd.append("image", formData.featuredImage);
+        }
+
+        // Append PDF file and title (optional)
+        if (formData.pdfFile) {
+            fd.append("pdf", formData.pdfFile);
+            fd.append(
+                "pdfTitle",
+                formData.pdfTitle.trim() || formData.pdfFile.name
+            );
+        }
+
+        setLoading(true);
+        try {
+            const result = await postBlog(fd);
+
+            if (result && result.ok) {
+                toast.success("Blog posted successfully");
+                // Reset form
+                setFormData({
+                    title: "",
+                    summary: "",
+                    featuredImage: null,
+                    featuredImagePreview: null,
+                    pdfFile: null,
+                    pdfTitle: "",
+                    tags: "",
+                    content: [
+                        {
+                            id: "1",
+                            subtitle: "",
+                            paragraphs: [""],
+                        },
+                    ],
+                });
+            } else {
+                toast.error(result?.message || "Failed to publish post");
+            }
+        } catch (err: any) {
+            toast.error(err?.message || "Failed to publish post");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getTotalParagraphs = () => {
@@ -234,7 +290,6 @@ export function BlogForm() {
                         value={formData.tags}
                         onChange={handleTagsChange}
                         className="py-5"
-                        required
                     />
                 </CardContent>
             </Card>
@@ -308,6 +363,25 @@ export function BlogForm() {
                         }}
                         fileName={formData.pdfFile?.name}
                     />
+                    {formData.pdfFile && (
+                        <div className="mt-4">
+                            <Label htmlFor="pdfTitle">
+                                PDF Title (optional)
+                            </Label>
+                            <Input
+                                id="pdfTitle"
+                                placeholder="Enter PDF title"
+                                value={formData.pdfTitle}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        pdfTitle: e.target.value,
+                                    })
+                                }
+                                className="mt-2 py-3"
+                            />
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -319,8 +393,9 @@ export function BlogForm() {
                 <Button
                     type="submit"
                     className="px-8 bg-button-blue hover:bg-light-blue"
+                    disabled={loading}
                 >
-                    Publish Post
+                    {loading ? "Publishing..." : "Publish Post"}
                 </Button>
             </div>
         </form>

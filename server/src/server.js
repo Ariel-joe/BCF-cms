@@ -2,6 +2,7 @@ import express from "express"
 import "dotenv/config"
 import { connectDb } from "./database/config.js";
 import cookieParser from "cookie-parser";
+import cors from "cors"
 import compression from "compression";
 import session from "express-session";
 import MongoStore from "connect-mongo";
@@ -14,6 +15,15 @@ const app = express();
 
 // TODO: uncompress the server later
 // app.use(compression())
+app.use(express.urlencoded({ extended: true }));
+
+const corsOptions = {
+    origin: "http://localhost:3000",
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+
 
 // db connection
 connectDb();
