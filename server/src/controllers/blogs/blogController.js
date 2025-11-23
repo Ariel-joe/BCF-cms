@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 import { Blog } from "../../database/blog.js";
 import { User } from "../../database/user.js";
+import { StatusCodes } from "http-status-codes";
 
 export const createBlog = async (req, res) => {
-    const session = await mongoose.startSession();
     try {
-        session.startTransaction();
         const { title, summary, pdfTitle } = req.body;
 
         // Parse content from JSON string
@@ -20,7 +19,10 @@ export const createBlog = async (req, res) => {
         const tags = req.body["tags[]"] || req.body.tags || [];
 
         const userId = req.user.id;
-        const user = await User.findOne({ _id: userId }).session(session);
+        const user = await User.findOne({ _id: userId });
+        if (!user) {
+            throw new Error("User not found");
+        }
 
         const imageUrl =
             req.files?.image && req.files.image.length > 0
@@ -36,45 +38,35 @@ export const createBlog = async (req, res) => {
                 ? req.files.pdf[0].path
                 : null;
 
-        const newBlog = await Blog.create(
-            [
-                {
-                    image: imageUrl,
-                    datePublished: Date.now(),
-                    title,
-                    summary,
-                    content: content,
-                    tags: Array.isArray(tags) ? tags : [tags],
-                    pdf: {
-                        title: pdfTitle || null,
-                        url: pdfUrl || null,
-                    },
-                    author: user._id,
-                },
-            ],
-            { session }
-        );
+        const newBlog = await Blog.create({
+            image: imageUrl,
+            datePublished: Date.now(),
+            title,
+            summary,
+            content: content,
+            tags: Array.isArray(tags) ? tags : [tags],
+            pdf: {
+                title: pdfTitle || null,
+                url: pdfUrl || null,
+            },
+            author: user._id,
+        });
 
         if (!newBlog) {
             throw new Error("Cannot create the blog!");
         }
 
-        await session.commitTransaction();
-
         return res.status(StatusCodes.CREATED).json({
             success: true,
             message: "Blog created successfully",
-            data: newBlog[0],
+            data: newBlog,
         });
     } catch (error) {
-        await session.abortTransaction();
         console.error("Blog creation error:", error);
 
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: error.message || "Please try again!",
         });
-    } finally {
-        session.endSession();
     }
 };
