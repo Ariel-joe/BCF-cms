@@ -101,6 +101,7 @@ const useBlogStore = create((set) => ({
 
     allBlogs: async () => {
         try {
+            set({ loading: true });
             const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/blog/`;
             const res = await fetch(url, {
                 method: "GET",
@@ -113,7 +114,7 @@ const useBlogStore = create((set) => ({
             if (contentType.includes("application/json")) {
                 try {
                     const { data } = await res.json();
-                    set({ blogs: data || [] });
+                    set({ blogs: data || [], loading: false });
                 } catch (err) {
                     console.error("Failed to parse allBlogs response", err);
                 }

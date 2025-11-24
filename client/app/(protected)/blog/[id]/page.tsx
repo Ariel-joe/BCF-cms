@@ -188,7 +188,7 @@ export default function BlogDetailPage() {
                                 <h3 className="text-xl font-semibold text-neutral-900 mt-12 mb-6">
                                     Download PDF
                                 </h3>
-                                <div className="flex items-center gap-3 bg-neutral-200 rounded-lg p-4">
+                                <div className="flex items-center gap-3 bg-neutral-200 p-4">
                                     <div className="bg-blue-600 text-white p-2.5 rounded-lg flex items-center justify-center">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -229,8 +229,10 @@ export default function BlogDetailPage() {
                     {/* delete button and update button */}
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 flex gap-3">
                         <a
-                            href={`/blog/edit/${singleBlog.id ?? singleBlog._id}`}
-                            className="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm"
+                            href={`/blog/edit/${
+                                singleBlog.id ?? singleBlog._id
+                            }`}
+                            className="items-center text-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
                         >
                             Update
                         </a>
@@ -247,15 +249,19 @@ export default function BlogDetailPage() {
 
                                 try {
                                     const id = singleBlog.id ?? singleBlog._id;
-                                    const res = await fetch(`/api/blogs/${id}`, { method: "DELETE" });
-                                    if (!res.ok) throw new Error("Delete failed");
+                                    const res = await fetch(
+                                        `/api/blogs/${id}`,
+                                        { method: "DELETE" }
+                                    );
+                                    if (!res.ok)
+                                        throw new Error("Delete failed");
                                     window.location.href = "/blog";
                                 } catch (err) {
                                     alert("Failed to delete the blog post.");
                                     console.error(err);
                                 }
                             }}
-                            className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm"
+                            className="text-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 w-full text-white text-sm"
                         >
                             Delete
                         </button>

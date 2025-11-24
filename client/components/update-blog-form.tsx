@@ -476,7 +476,7 @@ export default function EditBlogForm() {
                         {formData.keepExistingPdf &&
                             singleBlog?.pdf &&
                             !formData.pdfFile && (
-                                <div className="mb-4 p-4 bg-muted rounded-lg">
+                                <div className="mb-4 p-4 bg-muted">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <svg
