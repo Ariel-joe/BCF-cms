@@ -14,7 +14,12 @@ const blogRouter = Router();
 blogRouter.post("/blog/create", authMiddleware, uploadBlogFiles, createBlog);
 blogRouter.get("/blog", allBlogs);
 blogRouter.get("/blog/:id", getBlogById);
-blogRouter.put("/blog/:id", authMiddleware, updateBlogById); //TODO: add uploadBlogFiles if updating files is needed
+blogRouter.put(
+    "/blog/update/:id",
+    authMiddleware,
+    uploadBlogFiles,
+    updateBlogById
+); //TODO: add uploadBlogFiles if updating files is needed
 blogRouter.delete("/blog/:id", authMiddleware, deleteBlogById);
 
 export { blogRouter };

@@ -1,5 +1,4 @@
 "use client";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 interface BlogCardProps {
@@ -17,9 +16,6 @@ interface BlogCardProps {
 
 export function BlogCard({ blog }: BlogCardProps) {
     const { image, datePublished, author, summary, _id, title } = blog;
-
-    console.log(blog, "id");
-    
 
     const preview = summary
         ? summary.length > 10
@@ -60,4 +56,4 @@ export function BlogCard({ blog }: BlogCardProps) {
             </article>
         </>
     );
-};
+}

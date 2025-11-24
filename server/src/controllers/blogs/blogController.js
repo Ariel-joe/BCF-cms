@@ -122,6 +122,9 @@ export const getBlogById = async (req, res) => {
 // TODO: make sure only author or admin can update/delete //also check if one can update the imagess/pdf
 
 // update blog by id
+// Update blog by id with file handling
+// Update blog by id with file handling
+// Update blog by id with file handling
 export const updateBlogById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -131,16 +134,71 @@ export const updateBlogById = async (req, res) => {
                 message: "Invalid blog ID",
             });
         }
-        const updatedData = req.body;
-        const updatedBlog = await Blog.findByIdAndUpdate(id, updatedData, {
-            new: true,
-        });
-        if (!updatedBlog) {
+
+        const blog = await Blog.findById(id);
+        if (!blog) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 success: false,
                 message: "Blog not found",
             });
         }
+
+        // Parse the body data
+        const updatedData = { ...req.body };
+
+        // Parse tags if it's a string array format from FormData
+        if (req.body["tags[]"]) {
+            updatedData.tags = Array.isArray(req.body["tags[]"])
+                ? req.body["tags[]"]
+                : [req.body["tags[]"]];
+            delete updatedData["tags[]"];
+        }
+
+        // Parse content JSON string
+        if (typeof updatedData.content === "string") {
+            try {
+                updatedData.content = JSON.parse(updatedData.content);
+            } catch (e) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid content format",
+                });
+            }
+        }
+
+        // Handle image upload (optional - only update if new file provided)
+        const imageUrl =
+            req.files?.image && req.files.image.length > 0
+                ? req.files.image[0].path
+                : null;
+
+        if (imageUrl) {
+            updatedData.image = imageUrl;
+        }
+
+        // Handle PDF upload/removal
+        const pdfUrl =
+            req.files?.pdf && req.files.pdf.length > 0
+                ? req.files.pdf[0].path
+                : null;
+
+        if (pdfUrl) {
+            // New PDF uploaded
+            updatedData.pdf = {
+                title: req.body.pdfTitle || req.files.pdf[0].originalname,
+                url: pdfUrl,
+            };
+        } else if (req.body.removePdf === "true") {
+            // User wants to remove PDF
+            updatedData.pdf = null;
+        }
+        // If neither condition is true, keep existing PDF
+
+        const updatedBlog = await Blog.findByIdAndUpdate(id, updatedData, {
+            new: true,
+            runValidators: true,
+        }).populate("author", "name email");
+
         return res.status(StatusCodes.OK).json({
             success: true,
             data: updatedBlog,

@@ -145,16 +145,50 @@ const useBlogStore = create((set) => ({
                 },
                 credentials: "include",
             });
-           
+
             if (res.ok) {
                 const response = await res.json();
-                console.log("response from the server", response);
+
                 set({ singleBlog: response?.data || {}, loading: false });
                 return;
             }
         } catch (error) {
             console.error(error);
             set({ singleBlog: null, loading: false });
+            return {
+                ok: false,
+                status: 0,
+                message: error?.message || "Network error",
+            };
+        }
+    },
+
+    editBlog: async (id, blogData) => {
+        try {
+            set({ loading: true });
+            const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/blog/update/${id}`;
+            const res = await fetch(url, {
+                method: "PUT",
+                body: blogData,
+                credentials: "include",
+            });
+
+            if (res.ok) {
+                const response = await res.json();
+                set({ singleBlog: response?.data || null, loading: false });
+                return { ok: true, data: response.data };
+            } else {
+                const error = await res.json();
+                set({ loading: false });
+                return {
+                    ok: false,
+                    status: res.status,
+                    message: error.message || "Failed to update blog",
+                };
+            }
+        } catch (error) {
+            console.error(error);
+            set({ loading: false });
             return {
                 ok: false,
                 status: 0,
