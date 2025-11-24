@@ -486,11 +486,16 @@ export function WelfareForm() {
 
             {/* Form Actions */}
             <div className="flex gap-3 justify-end">
-                <Button type="button" variant="outline">
+                {/* <Button type="button" variant="outline">
                     Save as Draft
-                </Button>
-                <Button type="submit" className="px-8 bg-button-blue">
-                    Publish Initiative
+                </Button> */}
+
+                <Button
+                    type="submit"
+                    className="px-8 bg-button-blue hover:bg-light-blue"
+                    disabled={loading}
+                >
+                    {loading ? "Publishing..." : "Publish Initiative"}
                 </Button>
             </div>
         </form>

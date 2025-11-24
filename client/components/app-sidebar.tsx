@@ -95,7 +95,7 @@ const data = {
         },
         {
             name: "Welfares",
-            url: "#",
+            url: "/welfare",
             icon: IconDatabase,
         },
         // {
