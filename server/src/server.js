@@ -10,6 +10,7 @@ import passport from "./controllers/Auth/passport-google.js";
 import { authRouter } from "./routes/v1/authRouter.js";
 import { authMiddleware } from "./middleware/authMiddleware.js";
 import { blogRouter } from "./routes/v1/blogRouter.js";
+import { welfRouter } from "./routes/v1/welfareRouter.js";
 
 const app = express();
 
@@ -57,7 +58,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // routes
-app.use("/api/v1", authRouter, blogRouter);
+app.use("/api/v1", authRouter, authMiddleware, blogRouter, welfRouter);
 
 // Passport Google OAuth routes
 app.get("/auth/google",

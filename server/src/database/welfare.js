@@ -7,35 +7,37 @@ const welfareSchema = new Schema(
         startDate: { type: Date, required: true },
         category: {
             type: String,
-            enum: ["Internal", "FOB"],
-            default: "FOB",
+            enum: ["internal", "friends-of-beacon"], // Match frontend values
             required: true,
         },
-        progress: { type: String, required: true, trim: true },
+        progress: { type: String, default: "0%" },
         status: {
             type: String,
             enum: ["active", "completed"],
             default: "active",
-            required: true,
         },
-        budget: { type: String, required: true },
-        successRate: { type: String, default: "0" },
+        budget: { type: String, default: "N/A" },
+        successRate: { type: String, default: "0%" },
         impactRecord: {
-            individuals: { type: String, required: true, trim: true },
-            communities: { type: String, required: true, trim: true },
+            individuals: { type: String, default: "0" },
+            communities: { type: String, default: "0" },
         },
         coordinator: {
             type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
-        partners: [{ type: String }],
+        partners: [{ type: String, required: true }],
         summary: { type: String, required: true, trim: true },
-        content: { type: String, required: true, trim: true },
+        content: [
+            {
+                subtitle: { type: String, required: true },
+                paragraphs: [{ type: String, required: true }],
+            },
+        ], // ✅ Changed from String to Array
     },
     { timestamps: true }
 );
 
-const Welfare = new model("welfare", welfareSchema);
-
+const Welfare = model("Welfare", welfareSchema);
 export { Welfare };

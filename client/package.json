@@ -7,7 +7,7 @@
         "build": "next build --turbopack",
         "start": "next start",
         "lint": "eslint",
-        "setup:blog-form": "npx shadcn@latest add button card input label textarea && echo 'All blog form components installed successfully!'"
+        "setup:welfare-form": "npx shadcn@latest add button card input label textarea select && echo 'All welfare form components installed successfully!'"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
