@@ -12,10 +12,10 @@ export default function page() {
         allBlogs();
     }, []);
   return (
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogs.map((blog: any) => (
-              <BlogCard key={blog.id} blog={blog} />
+          {blogs.map((blog: any, index: number) => (
+              <BlogCard key={index} blog={blog} />
           ))}
           </div>
       </div>

@@ -10,13 +10,16 @@ interface BlogCardProps {
             name: string;
         };
         summary: string;
-        id: string;
+        _id: string;
         title: string;
     };
 }
 
 export function BlogCard({ blog }: BlogCardProps) {
-    const { image, datePublished, author, summary, id, title } = blog;
+    const { image, datePublished, author, summary, _id, title } = blog;
+
+    console.log(blog, "id");
+    
 
     const preview = summary
         ? summary.length > 10
@@ -25,7 +28,7 @@ export function BlogCard({ blog }: BlogCardProps) {
         : "";
     return (
         <>
-            <article className="bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+            <article className="bg-white border border-neutral-200 overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-48 w-full overflow-hidden">
                     <img
                         src={image}
@@ -36,7 +39,7 @@ export function BlogCard({ blog }: BlogCardProps) {
                 </div>
                 <div className="p-6">
                     <div className="flex items-center space-x-2 text-xs text-neutral-500 mb-3">
-                        <span>{datePublished}</span>
+                        <span>{new Date(datePublished).toLocaleString()}</span>
                         <span>•</span>
                         <span>{author.name}</span>
                     </div>
@@ -46,10 +49,10 @@ export function BlogCard({ blog }: BlogCardProps) {
                     <p className="text-neutral-600 text-sm mb-4 leading-relaxed">
                         {preview}
                     </p>
-                    <div className="flex items-center justify-between">
-                        <Link href={`/blog/${id}`}>
-                            <button className="text-neutral-900 cursor-pointer text-sm hover:text-neutral-600 transition-colors flex gap-2">
-                                Read More <ArrowRight size={22} />
+                    <div>
+                        <Link href={`/blog/${_id}`} className="w-full">
+                            <button className="text-white text-center w-full bg-btn-view cursor-pointer text-sm hover:text-white hover:bg-light-blue py-1 transition-colors gap-2">
+                                Details
                             </button>
                         </Link>
                     </div>

@@ -1,7 +1,10 @@
+import { get } from "http";
 import { create } from "zustand";
 
 const useBlogStore = create((set) => ({
     blogs: [],
+    singleBlog: null,
+    loading: false,
     postBlog: async (blogData) => {
         try {
             const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/blog/create`;
@@ -117,12 +120,41 @@ const useBlogStore = create((set) => ({
             }
 
             if (!res.ok) {
-                return { ok: false, status: res.status, ...json };
+                return { ok: false, status: res.status };
             }
 
-            return { ok: true, status: res.status, ...json };
+            return { ok: true, status: res.status };
         } catch (error) {
             console.error(error);
+            return {
+                ok: false,
+                status: 0,
+                message: error?.message || "Network error",
+            };
+        }
+    },
+
+    getBlogById: async (id) => {
+        try {
+            set({ loading: true, singleBlog: null });
+            const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/blog/${id}`;
+            const res = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+           
+            if (res.ok) {
+                const response = await res.json();
+                console.log("response from the server", response);
+                set({ singleBlog: response?.data || {}, loading: false });
+                return;
+            }
+        } catch (error) {
+            console.error(error);
+            set({ singleBlog: null, loading: false });
             return {
                 ok: false,
                 status: 0,
