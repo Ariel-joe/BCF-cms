@@ -78,3 +78,188 @@ export const createWelfare = async (req, res) => {
         });
     }
 };
+
+// fetchall welfare intiatives
+export const getAllWelfares = async (req, res) => {
+    try {
+        const welfares = await Welfare.find().populate(
+            "coordinator",
+            "name email"
+        );
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            data: welfares,
+        });
+    } catch (error) {
+        console.error("Fetch all welfares error:", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: error.message || "Please try again!",
+        });
+    }
+};
+
+// update welfare by id(including updatting image)
+export const updateWelfareById = async (req, res) => {
+    try {
+        const welfareId = req.params.id;
+
+        // Validate user
+        const userId = req.user?.id;
+        const loggedInUser = await User.findById(userId);
+        if (!loggedInUser) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
+        // Fetch existing welfare to merge updates
+        const existing = await Welfare.findById(welfareId);
+        if (!existing) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                success: false,
+                message: "Welfare project not found",
+            });
+        }
+
+        // Process uploaded image (if any). If no new image is provided, keep existing image.
+        const imageUrl = req.file?.path || existing.image || null;
+
+        // Parse content if provided (it may be a JSON string)
+        let content = existing.content;
+        if (req.body.content !== undefined) {
+            try {
+                content = req.body.content
+                    ? JSON.parse(req.body.content)
+                    : existing.content;
+            } catch (error) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    success: false,
+                    message: "Invalid content format",
+                });
+            }
+        }
+
+        // Normalize partners (may come as partners[] from FormData)
+        let partnersArray = existing.partners || [];
+        if (req.body.partners !== undefined) {
+            const partners = req.body.partners || [];
+            partnersArray = Array.isArray(partners) ? partners : [partners];
+            partnersArray = partnersArray.filter((p) => String(p).trim());
+        }
+
+        // Build update payload only with fields provided (leave others intact)
+        const {
+            title,
+            startDate,
+            category,
+            status,
+            summary,
+            progress,
+            budget,
+            successRate,
+            impactIndividuals,
+            impactCommunities,
+        } = req.body;
+
+        const updateData = {};
+        if (imageUrl !== undefined) updateData.image = imageUrl;
+        if (title !== undefined) updateData.title = title;
+        if (startDate !== undefined)
+            updateData.startDate = startDate
+                ? new Date(startDate)
+                : existing.startDate;
+        if (category !== undefined) updateData.category = category;
+        if (status !== undefined) updateData.status = status;
+        if (summary !== undefined) updateData.summary = summary;
+        if (content !== undefined) updateData.content = content;
+        if (partnersArray !== undefined) updateData.partners = partnersArray;
+        if (progress !== undefined) updateData.progress = progress;
+        if (budget !== undefined) updateData.budget = budget;
+        if (successRate !== undefined) updateData.successRate = successRate;
+
+        // impactRecord merge
+        updateData.impactRecord = {
+            individuals:
+                impactIndividuals !== undefined
+                    ? impactIndividuals
+                    : existing.impactRecord?.individuals || "0",
+            communities:
+                impactCommunities !== undefined
+                    ? impactCommunities
+                    : existing.impactRecord?.communities || "0",
+        };
+
+        // Do the update
+        const updatedWelfare = await Welfare.findByIdAndUpdate(
+            welfareId,
+            updateData,
+            { new: true }
+        );
+
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Welfare project updated successfully",
+            data: updatedWelfare,
+        });
+    } catch (error) {
+        console.error("Welfare update error:", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: error.message || "Please try again!",
+        });
+    }
+};
+
+
+// fetch welfare by id
+export const getWelfareById = async (req, res) => {
+    try {
+        const welfareId = req.params.id;
+        const welfare = await Welfare.findById(welfareId).populate(
+            "coordinator",
+            "name email"
+        );
+        if (!welfare) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                success: false,
+                message: "Welfare project not found",
+            });
+        }
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            data: welfare,
+        });
+    } catch (error) {
+        console.error("Fetch welfare by ID error:", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: error.message || "Please try again!",
+        });
+    }
+};
+
+// delete welfare by id
+export const deleteWelfareById = async (req, res) => {
+    try {
+        const welfareId = req.params.id;
+        const deletedWelfare = await Welfare.findByIdAndDelete(welfareId);
+        if (!deletedWelfare) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                success: false,
+                message: "Welfare project not found",
+            });
+        }
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Welfare project deleted successfully",
+        });
+    } catch (error) {
+        console.error("Delete welfare error:", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: error.message || "Please try again!",
+        });
+    }
+};
