@@ -26,23 +26,22 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 
-export function NavDocuments(
-    {
-        items,
-    }: {
-        items: {
-            name: string;
-            url: string;
-            icon: Icon;
-        }[];
-    },
-
-) {
+export function NavDocuments({
+    items,
+    title,
+}: {
+    title: string;
+    items: {
+        name: string;
+        url: string;
+        icon: Icon;
+    }[];
+}) {
     const { isMobile } = useSidebar();
 
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarGroupLabel>Blogs</SidebarGroupLabel>
+            <SidebarGroupLabel>{title}</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.name}>

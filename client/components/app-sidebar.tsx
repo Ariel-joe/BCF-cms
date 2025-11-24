@@ -81,11 +81,11 @@ const data = {
             url: "/blog",
             icon: IconDatabase,
         },
-        {
-            name: "Drafts",
-            url: "#",
-            icon: IconReport,
-        },
+        // {
+        //     name: "Drafts",
+        //     url: "#",
+        //     icon: IconReport,
+        // },
     ],
     welfareSection: [
         {
@@ -98,11 +98,11 @@ const data = {
             url: "#",
             icon: IconDatabase,
         },
-        {
-            name: "Drafts",
-            url: "#",
-            icon: IconReport,
-        },
+        // {
+        //     name: "Drafts",
+        //     url: "#",
+        //     icon: IconReport,
+        // },
     ],
     userSection: [
         {
@@ -140,9 +140,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />
-                <NavDocuments items={data.blogSection} />
-                <NavDocuments items={data.welfareSection} />
-                <NavDocuments items={data.userSection} />
+                <NavDocuments title="Blog" items={data.blogSection} />
+                <NavDocuments title="Welfare" items={data.welfareSection} />
+                <NavDocuments title="Users" items={data.userSection} />
                 {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
             </SidebarContent>
             <SidebarFooter>

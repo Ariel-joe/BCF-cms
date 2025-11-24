@@ -1,16 +1,31 @@
 "use client";
+import LoadingSkeleton from "@/components/loading-comp";
 import { useBlogStore } from "@/stores/blogStore";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Router } from "next/router";
 import React, { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function BlogDetailPage() {
     const params = useParams();
     const id = params?.id;
     const stringId = String(id);
+    const router = useRouter();
 
-    const { getBlogById, singleBlog, loading } = useBlogStore();
+    const { getBlogById, singleBlog, loading, deleteBlog } = useBlogStore();
     const [fetchAttempted, setFetchAttempted] = React.useState(false);
 
+    const handleDelete = async () => {
+        if (singleBlog && (singleBlog.id || singleBlog._id)) {
+            const deleted = await deleteBlog(singleBlog.id ?? singleBlog._id);
+            if (deleted) {
+                toast.success("Blog deleted successfully");
+                router.push("/blog");
+            } else {
+                toast.error("Failed to delete blog");
+            }
+        }}
+    
     useEffect(() => {
         const fetchBlog = async () => {
             if (stringId && stringId !== "undefined") {
@@ -25,7 +40,7 @@ export default function BlogDetailPage() {
     if (loading || !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <div className="text-lg">Loading...</div>
+                <LoadingSkeleton />
             </div>
         );
     }
@@ -239,28 +254,7 @@ export default function BlogDetailPage() {
 
                         <button
                             type="button"
-                            onClick={async () => {
-                                if (
-                                    !confirm(
-                                        "Are you sure you want to delete this blog post? This action cannot be undone."
-                                    )
-                                )
-                                    return;
-
-                                try {
-                                    const id = singleBlog.id ?? singleBlog._id;
-                                    const res = await fetch(
-                                        `/api/blogs/${id}`,
-                                        { method: "DELETE" }
-                                    );
-                                    if (!res.ok)
-                                        throw new Error("Delete failed");
-                                    window.location.href = "/blog";
-                                } catch (err) {
-                                    alert("Failed to delete the blog post.");
-                                    console.error(err);
-                                }
-                            }}
+                            onClick={() => handleDelete()}
                             className="text-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 w-full text-white text-sm"
                         >
                             Delete

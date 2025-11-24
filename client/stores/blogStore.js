@@ -197,6 +197,28 @@ const useBlogStore = create((set) => ({
             };
         }
     },
+
+    deleteBlog: async (id) => {
+        try {
+            const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/blog/delete/${id}`;
+            const res = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+            if (res.ok) {
+                return true
+            } else {
+                
+                return false
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    },
 }));
 
 export { useBlogStore };

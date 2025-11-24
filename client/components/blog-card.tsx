@@ -22,6 +22,8 @@ export function BlogCard({ blog }: BlogCardProps) {
             ? summary.substring(0, 100) + "..."
             : summary
         : "";
+
+    const titlePreview = title.length > 60 ? title.substring(0, 57) + "..." : title;
     return (
         <>
             <article className="bg-white border border-neutral-200 overflow-hidden hover:shadow-lg transition-shadow">
@@ -40,7 +42,7 @@ export function BlogCard({ blog }: BlogCardProps) {
                         <span>{author.name}</span>
                     </div>
                     <h3 className="text-lg text-neutral-900 mb-3 leading-tight">
-                        {title}
+                        {titlePreview}
                     </h3>
                     <p className="text-neutral-600 text-sm mb-4 leading-relaxed">
                         {preview}

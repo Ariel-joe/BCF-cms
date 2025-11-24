@@ -20,6 +20,6 @@ blogRouter.put(
     uploadBlogFiles,
     updateBlogById
 ); //TODO: add uploadBlogFiles if updating files is needed
-blogRouter.delete("/blog/:id", authMiddleware, deleteBlogById);
+blogRouter.delete("/blog/delete/:id", authMiddleware, deleteBlogById);
 
 export { blogRouter };
