@@ -206,7 +206,7 @@ export function WelfareForm() {
 
         // Append partners as array
         formData.partners.forEach((partner) => {
-            fd.append("partners[]", partner);
+            fd.append("partners", partner);
         });
 
         // Clean and append content

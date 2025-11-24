@@ -39,7 +39,7 @@ export const createWelfare = async (req, res) => {
         }
 
         // Parse partners array - it comes as partners[] from FormData
-        const partners = req.body["partners[]"] || [];
+        const partners = req.body.partners || [];
         const partnersArray = Array.isArray(partners) ? partners : [partners];
 
         // Create welfare data
