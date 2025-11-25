@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { BioData } from "../../database/profile.js";
 import { User } from "../../database/user.js";
 
@@ -54,6 +55,9 @@ export const createProfile = async (req, res) => {
 export const fetchAllProfiles = async (req, res) => {
     try {
         const profiles = await BioData.find();
+
+        console.log("profiles", profiles);
+        
         return res.status(StatusCodes.OK).json({
             success: true,
             data: profiles,
