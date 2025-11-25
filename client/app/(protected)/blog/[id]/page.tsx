@@ -2,7 +2,6 @@
 import LoadingSkeleton from "@/components/loading-comp";
 import { useBlogStore } from "@/stores/blogStore";
 import { useParams, useRouter } from "next/navigation";
-import { Router } from "next/router";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -24,8 +23,9 @@ export default function BlogDetailPage() {
             } else {
                 toast.error("Failed to delete blog");
             }
-        }}
-    
+        }
+    };
+
     useEffect(() => {
         const fetchBlog = async () => {
             if (stringId && stringId !== "undefined") {

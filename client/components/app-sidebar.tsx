@@ -45,11 +45,6 @@ const data = {
             url: "#",
             icon: IconChartBar,
         },
-        {
-            title: "User Directory",
-            url: "#",
-            icon: IconDatabase,
-        },
     ],
 
     navSecondary: [
@@ -103,9 +98,21 @@ const data = {
         //     icon: IconReport,
         // },
     ],
+    profileSection: [
+        {
+            name: "Profile List",
+            url: "/profile",
+            icon: IconListDetails,
+        },
+        {
+            name: "Create Profile",
+            url: "/profile/create",
+            icon: IconUserCircle,
+        },
+    ],
     userSection: [
         {
-            name: "Users List",
+            name: "User List",
             url: "#",
             icon: IconListDetails,
         },
@@ -139,8 +146,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />
-                <NavDocuments title="Blog" items={data.blogSection} />
-                <NavDocuments title="Welfare" items={data.welfareSection} />
+                <NavDocuments title="Blogs" items={data.blogSection} />
+                <NavDocuments title="Welfares" items={data.welfareSection} />
+                <NavDocuments title="Profiles" items={data.profileSection} />
                 <NavDocuments title="Users" items={data.userSection} />
                 {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
             </SidebarContent>

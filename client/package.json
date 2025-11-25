@@ -7,7 +7,7 @@
         "build": "next build --turbopack",
         "start": "next start",
         "lint": "eslint",
-        "setup:welfare-form": "npx shadcn@latest add button card input label textarea select && echo 'All welfare form components installed successfully!'"
+        "setup:profile-modal": "npx shadcn@latest add button card input label textarea select dialog && echo 'All profile modal components installed successfully!'"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
