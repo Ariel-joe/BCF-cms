@@ -23,6 +23,12 @@ export default function WelfareCard({ welfare }: WelfareCardProps) {
             : summary
         : "";
 
+    const titlePreview = title
+        ? title.length > 10
+            ? title.substring(0, 50) + "..."
+            : title
+        : "";
+
     return (
         <>
             <div className="bg-white border border-neutral-200 w-full overflow-hidden hover:shadow-lg transition-shadow">
@@ -39,9 +45,13 @@ export default function WelfareCard({ welfare }: WelfareCardProps) {
                         <span className="px-3 py-1 bg-neutral-100 text-neutral-800 text-sm rounded-full">
                             {status}
                         </span>
-                        <span className="text-neutral-500 text-sm">{new Date(startDate).toLocaleDateString()}</span>
+                        <span className="text-neutral-500 text-sm">
+                            {new Date(startDate).toLocaleDateString()}
+                        </span>
                     </div>
-                    <h3 className="text-lg text-neutral-900 mb-3 font-bold">{title}</h3>
+                    <h3 className="text-lg text-neutral-900 mb-3 font-bold">
+                        {titlePreview}
+                    </h3>
                     <p className="text-neutral-600 mb-4 text-sm">{preview}</p>
                     <div className="mb-4">
                         <div className="flex justify-between text-sm text-neutral-600 mb-1">
@@ -55,10 +65,10 @@ export default function WelfareCard({ welfare }: WelfareCardProps) {
                     </div>
                     <div className="flex items-center justify-between">
                         <span className="text-neutral-600">
-                            Budget: Ksh {budget}
+                            Budget: Ksh {parseInt(budget).toLocaleString()}
                         </span>
                         <Link href={`/welfare/${_id}`}>
-                            <button className="px-4 py-2 bg-btn-view text-white text-sm hover:bg-neutral-800">
+                            <button className="px-4 py-2 bg-btn-view text-white text-sm hover:bg-light-blue">
                                 View Details
                             </button>
                         </Link>

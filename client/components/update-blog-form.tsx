@@ -18,6 +18,7 @@ import { FileUpload } from "@/components/file-upload";
 import { ContentBlockForm } from "@/components/content-block-form";
 import { Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import LoadingSkeleton from "./loading-comp";
 
 interface ContentBlock {
     id: string;
@@ -302,7 +303,7 @@ export default function EditBlogForm() {
     if (storeLoading || !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <div className="text-lg">Loading blog data...</div>
+                <LoadingSkeleton />
             </div>
         );
     }

@@ -1,9 +1,10 @@
-'use client';
+"use client";
 import LoadingSkeleton from "@/components/loading-comp";
 import { useWelfareStore } from "@/stores/welfareStore";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function page() {
     // get the :id param from the URL
@@ -12,8 +13,23 @@ export default function page() {
     const stringId = String(id);
     const router = useRouter();
 
-    const { fetchWelfareById, welfareData, loading } = useWelfareStore();
+    const { fetchWelfareById, welfareData, loading, deleteWelfare } =
+        useWelfareStore();
     const [fetchAttempted, setFetchAttempted] = React.useState(false);
+
+    const handleDelete = async () => {
+        if (welfareData && (welfareData.id || welfareData._id)) {
+            const deleted = await deleteWelfare(
+                welfareData.id ?? welfareData._id
+            );
+            if (deleted) {
+                toast.success("Welfare post deleted successfully");
+                router.push("/welfare");
+            } else {
+                toast.error("Failed to delete welfare post");
+            }
+        }
+    };
 
     useEffect(() => {
         const fetchBlog = async () => {
@@ -73,12 +89,35 @@ export default function page() {
                             <p className="text-left text-neutral-600 mb-6">
                                 {welfareData.summary}
                             </p>
+
+                            <div>
+                                {/* delete button and update button */}
+                                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 flex gap-3">
+                                    <a
+                                        href={`/welfare/edit/${
+                                            welfareData.id ?? welfareData._id
+                                        }`}
+                                        className="items-center text-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
+                                    >
+                                        Update
+                                    </a>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete()}
+                                        className="text-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 w-full text-white text-sm"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                         </div>
+
                         <div className="lg:order-first">
                             <img
                                 src={welfareData.image}
                                 alt="welfareData image"
-                                className="rounded-lg w-full"
+                                className="w-full"
                             />
                         </div>
                     </div>

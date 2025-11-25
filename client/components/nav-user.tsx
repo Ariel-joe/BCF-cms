@@ -101,9 +101,9 @@ export function NavUser({}: {
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <button>
-                                <IconLogout />
+                        <DropdownMenuItem className="bg-red-500 hover:bg-red-600 text-white">
+                            <button className="flex items-center justify-center gap-1">
+                                <IconLogout color="white" />
                                 Log out
                             </button>
                         </DropdownMenuItem>

@@ -40,6 +40,13 @@ interface WelfareFormData {
     category: "internal" | "friends-of-beacon" | "";
     status: "active" | "completed";
     startDate: string;
+    budget: string;
+    successRate: string;
+    impactRecord: {
+        individuals: string;
+        communities: string;
+    };
+    progress: string;
     partners: string[];
     partnersInput: string;
     content: ContentBlock[];
@@ -55,6 +62,13 @@ export function WelfareForm() {
         category: "",
         status: "active",
         startDate: "",
+        budget: "",
+        successRate: "",
+        impactRecord: {
+            individuals: "",
+            communities: "",
+        },
+        progress: "",
         partners: [],
         partnersInput: "",
         content: [
@@ -87,6 +101,33 @@ export function WelfareForm() {
 
     const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, startDate: e.target.value });
+    };
+
+    const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, budget: e.target.value });
+    };
+
+    const handleSuccessRateChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setFormData({ ...formData, successRate: e.target.value });
+    };
+
+    const handleProgressChange = (value: string) => {
+        setFormData({ ...formData, progress: value });
+    };
+
+    const handleImpactRecordChange = (
+        field: keyof WelfareFormData["impactRecord"],
+        value: string
+    ) => {
+        setFormData({
+            ...formData,
+            impactRecord: {
+                ...formData.impactRecord,
+                [field]: value,
+            },
+        });
     };
 
     const handleAddPartner = () => {
@@ -198,6 +239,10 @@ export function WelfareForm() {
         fd.append("category", formData.category);
         fd.append("status", formData.status);
         fd.append("startDate", formData.startDate);
+        fd.append("budget", formData.budget.trim());
+        fd.append("successRate", formData.successRate.trim());
+        fd.append("progress", formData.progress.trim());
+        fd.append("impactRecord", JSON.stringify(formData.impactRecord));
 
         // Append image file
         if (formData.image) {
@@ -235,6 +280,13 @@ export function WelfareForm() {
                 category: "",
                 status: "active",
                 startDate: "",
+                budget: "",
+                successRate: "",
+                impactRecord: {
+                    individuals: "",
+                    communities: "",
+                },
+                progress: "",
                 partners: [],
                 partnersInput: "",
                 content: [
@@ -319,7 +371,8 @@ export function WelfareForm() {
                 <CardHeader>
                     <CardTitle>Details</CardTitle>
                     <CardDescription>
-                        Select the category and status of your initiative
+                        Select the category, status, and impact metrics of your
+                        initiative
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -372,6 +425,113 @@ export function WelfareForm() {
                             onChange={handleStartDateChange}
                             className="mt-2"
                         />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="budget">Budget</Label>
+                            <Input
+                                id="budget"
+                                placeholder="Enter budget amount"
+                                value={formData.budget}
+                                onChange={handleBudgetChange}
+                                className="mt-2"
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="successRate">
+                                Success Rate (%)
+                            </Label>
+                            <Input
+                                id="successRate"
+                                placeholder="Enter success rate"
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={formData.successRate}
+                                onChange={handleSuccessRateChange}
+                                className="mt-2"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="border-t pt-4 mt-4">
+                        <Label className="text-base font-semibold mb-4 block">
+                            Impact Record
+                        </Label>
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="individuals">
+                                    Individuals Impacted
+                                </Label>
+                                <Input
+                                    id="individuals"
+                                    placeholder="Enter number or description of individuals impacted"
+                                    value={formData.impactRecord.individuals}
+                                    onChange={(e) =>
+                                        handleImpactRecordChange(
+                                            "individuals",
+                                            e.target.value
+                                        )
+                                    }
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="communities">
+                                    Communities Impacted
+                                </Label>
+                                <Input
+                                    id="communities"
+                                    placeholder="Enter number or description of communities impacted"
+                                    value={formData.impactRecord.communities}
+                                    onChange={(e) =>
+                                        handleImpactRecordChange(
+                                            "communities",
+                                            e.target.value
+                                        )
+                                    }
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="progress">
+                                    Progress (Quarters)
+                                </Label>
+                                <Select
+                                    value={formData.progress}
+                                    onValueChange={(value) =>
+                                        handleProgressChange(
+                                            value,
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger
+                                        id="progress"
+                                        className="mt-2"
+                                    >
+                                        <SelectValue placeholder="Select progress" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="0">
+                                            0% - Not Started
+                                        </SelectItem>
+                                        <SelectItem value="25">
+                                            25% - Quarter Complete
+                                        </SelectItem>
+                                        <SelectItem value="50">
+                                            50% - Half Complete
+                                        </SelectItem>
+                                        <SelectItem value="75">
+                                            75% - Three Quarters Complete
+                                        </SelectItem>
+                                        <SelectItem value="100">
+                                            100% - Completed
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                     </div>
                 </CardContent>
             </Card>

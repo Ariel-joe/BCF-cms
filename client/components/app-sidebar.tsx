@@ -2,26 +2,19 @@
 
 import * as React from "react";
 import {
-    IconCamera,
     IconChartBar,
     IconDashboard,
     IconDatabase,
-    IconFileAi,
-    IconFileDescription,
-    IconFileWord,
-    IconFolder,
     IconHelp,
     IconInnerShadowTop,
     IconListDetails,
-    IconReport,
     IconSearch,
     IconSettings,
-    IconUsers,
+    IconUserCircle,
 } from "@tabler/icons-react";
 
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
     Sidebar,
@@ -32,6 +25,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { UserLock } from "lucide-react";
 
 const data = {
     user: {
@@ -50,6 +44,11 @@ const data = {
             title: "Donations",
             url: "#",
             icon: IconChartBar,
+        },
+        {
+            title: "User Directory",
+            url: "#",
+            icon: IconDatabase,
         },
     ],
 
@@ -111,9 +110,9 @@ const data = {
             icon: IconListDetails,
         },
         {
-            name: "Verify User",
+            name: "Create Account",
             url: "#",
-            icon: IconDatabase,
+            icon: IconUserCircle,
         },
     ],
 };
