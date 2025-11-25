@@ -3,6 +3,7 @@ import {
     createProfile,
     deleteProfileById,
     fetchAllProfiles,
+    getProfileById,
     updateProfileById,
 } from "../../controllers/profiles/profilesController.js";
 import uploadImage from "../../middleware/multerImage.js";
@@ -15,6 +16,7 @@ profileRouter.post(
     createProfile
 );
 profileRouter.get("/profile", fetchAllProfiles);
+profileRouter.get("/profile/:id", getProfileById);
 profileRouter.put(
     "/profile/update/:id",
     uploadImage.single("image"),

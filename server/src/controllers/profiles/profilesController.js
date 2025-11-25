@@ -2,7 +2,6 @@ import { StatusCodes } from "http-status-codes";
 import { BioData } from "../../database/profile.js";
 import { User } from "../../database/user.js";
 
-
 // creating profile
 export const createProfile = async (req, res) => {
     try {
@@ -50,14 +49,11 @@ export const createProfile = async (req, res) => {
     }
 };
 
-
 // fetching all profiles
 export const fetchAllProfiles = async (req, res) => {
     try {
         const profiles = await BioData.find();
 
-        console.log("profiles", profiles);
-        
         return res.status(StatusCodes.OK).json({
             success: true,
             data: profiles,
@@ -69,7 +65,7 @@ export const fetchAllProfiles = async (req, res) => {
             message: error.message || "Please try again!",
         });
     }
-}
+};
 
 // fetch profile by Id
 export const getProfileById = async (req, res) => {
@@ -94,7 +90,7 @@ export const getProfileById = async (req, res) => {
             message: error.message || "Please try again!",
         });
     }
-}
+};
 
 // update profile by id
 export const updateProfileById = async (req, res) => {
@@ -129,8 +125,8 @@ export const updateProfileById = async (req, res) => {
             { new: true }
         );
 
-        if(!updatedProfile) throw new Error("Profile unable to update!");
-        
+        if (!updatedProfile) throw new Error("Profile unable to update!");
+
         return res.status(StatusCodes.OK).json({
             success: true,
             message: "Profile updated successfully",
@@ -143,7 +139,7 @@ export const updateProfileById = async (req, res) => {
             message: error.message || "Please try again!",
         });
     }
-}
+};
 
 // delete profile by Id
 export const deleteProfileById = async (req, res) => {
@@ -177,4 +173,4 @@ export const deleteProfileById = async (req, res) => {
             message: error.message || "Please try again!",
         });
     }
-}
+};
