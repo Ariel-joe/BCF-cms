@@ -54,7 +54,7 @@ export function ImageUpload({ onImageChange, preview }: ImageUploadProps) {
     if (preview) {
         return (
             <div className="space-y-3">
-                <div className="relative w-58 h-58 overflow-hidden justify-center border border-border">
+                <div className="relative w-full h-96 overflow-hidden justify-center border border-border">
                     <img
                         src={preview || "/placeholder.svg"}
                         alt="Featured image preview"

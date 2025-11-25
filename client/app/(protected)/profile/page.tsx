@@ -1,28 +1,6 @@
 "use client";
 
-import ProfileTable from "@/components/profile-table";
-import React, { useEffect, useState } from "react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { ImageUpload } from "@/components/image-upload";
-import { ProfileForm } from "@/components/profile-form";
+import React, { useEffect } from "react";
 import LoadingSkeleton from "@/components/loading-comp";
 import { useProfileStore } from "@/stores/profileStore";
 import {
@@ -58,7 +36,6 @@ export default function page() {
     // loading userprofiles to the table
     const { loading, fetchProfiles, profilesData } = useProfileStore();
     const [fetchAttempted, setFetchAttempted] = React.useState(false);
-
 
     useEffect(() => {
         fetchProfiles();
@@ -118,14 +95,20 @@ export default function page() {
                                 <TableRow key={index}>
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell className="font-medium">
-                                        <span className="rounded-full bg-neutral-400 p-1.5">
-                                            {profile.name
+                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-300">
+                                            <img
+                                                src={profile.image}
+                                                alt="profile image"
+                                                className="w-full h-full object-cover"
+                                                loading="lazy"
+                                            />
+                                            {/* {profile.name
                                                 .split(" ")
                                                 .map((word: string) =>
                                                     word.charAt(0)
                                                 )
-                                                .join("")}
-                                        </span>
+                                                .join("")} */}
+                                        </div>
                                     </TableCell>
                                     <TableCell>{profile.name}</TableCell>
                                     <TableCell>{profile.position}</TableCell>
