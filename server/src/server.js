@@ -1,8 +1,8 @@
-import express from "express"
-import "dotenv/config"
+import express from "express";
+import "dotenv/config";
 import { connectDb } from "./database/config.js";
 import cookieParser from "cookie-parser";
-import cors from "cors"
+import cors from "cors";
 import compression from "compression";
 import session from "express-session";
 import MongoStore from "connect-mongo";
@@ -11,6 +11,7 @@ import { authRouter } from "./routes/v1/authRouter.js";
 import { authMiddleware } from "./middleware/authMiddleware.js";
 import { blogRouter } from "./routes/v1/blogRouter.js";
 import { welfRouter } from "./routes/v1/welfareRouter.js";
+import { profileRouter } from "./routes/v1/profileRouter.js";
 
 const app = express();
 
@@ -20,11 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
     origin: "http://localhost:3000",
-    credentials: true
+    credentials: true,
 };
 
 app.use(cors(corsOptions));
-
 
 // db connection
 connectDb();
@@ -52,33 +52,40 @@ app.use(
     })
 );
 
-
 // Initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
 
 // routes
-app.use("/api/v1", authRouter, authMiddleware, blogRouter, welfRouter);
+app.use(
+    "/api/v1",
+    authRouter,
+    authMiddleware,
+    blogRouter,
+    welfRouter,
+    profileRouter
+);
 
 // Passport Google OAuth routes
-app.get("/auth/google",
+app.get(
+    "/auth/google",
     passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-app.get("/auth/google/callback",
+app.get(
+    "/auth/google/callback",
     passport.authenticate("google", {
         failureRedirect: "/auth/signin?error=oauth",
         successRedirect: "/",
     })
 );
 
-app.get("/", authMiddleware,(req, res) => {
+app.get("/", authMiddleware, (req, res) => {
     res.json({
         message: "Dear all, I'm back!",
     });
 });
 
-
 app.listen(3500, () => {
-    console.log("server running on port 3500")
-})
+    console.log("server running on port 3500");
+});

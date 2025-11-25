@@ -58,12 +58,16 @@ export const createWelfare = async (req, res) => {
             budget: req.body.budget || "N/A",
             successRate: req.body.successRate || "0%",
             impactRecord: {
-                individuals: req.body.impactIndividuals || "0",
-                communities: req.body.impactCommunities || "0",
+                individuals: req.body.individuals || "0",
+                communities: req.body.communities || "0",
             },
         };
 
         const newWelfare = await Welfare.create(welfareData);
+
+        if (!newWelfare) {
+            throw new Error("Cannot create welfare project");
+        }
 
         return res.status(StatusCodes.CREATED).json({
             success: true,

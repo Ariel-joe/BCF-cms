@@ -6,7 +6,7 @@ const bioDataSchema = new Schema(
         name: { type: String, required: true, trim: true },
         position: { type: String, required: true, trim: true },
         slug: { type: String, enum: ["both", "team", "board"], required: true },
-        description: { type: String, required: true, trim: true },
+        bio: { type: String, required: true, trim: true },
     },
     {
         timestamps: true,
