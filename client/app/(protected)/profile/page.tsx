@@ -86,6 +86,9 @@ export default function page() {
                                     Position
                                 </TableHead>
                                 <TableHead className="text-white">
+                                    Slug
+                                </TableHead>
+                                <TableHead className="text-white">
                                     Bio
                                 </TableHead>
                             </TableRow>
@@ -112,6 +115,13 @@ export default function page() {
                                     </TableCell>
                                     <TableCell>{profile.name}</TableCell>
                                     <TableCell>{profile.position}</TableCell>
+                                    <TableCell>
+                                        {profile.slug === "team"
+                                            ? "Team Only"
+                                            : profile.slug === "board"
+                                            ? "Board Only"
+                                            : "Both Team & Board"}
+                                    </TableCell>
                                     <TableCell>
                                         <Link
                                             href={`/profile/${profile._id}`}

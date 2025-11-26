@@ -26,12 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuthStore } from "@/stores/authstore";
 
-export function NavUser({}: {
-    user: {
-        name: string;
-        email: string;
-    };
-}) {
+export function NavUser() {
     const { isMobile } = useSidebar();
     const { user } = useAuthStore();
 

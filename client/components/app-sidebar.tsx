@@ -11,6 +11,8 @@ import {
     IconSearch,
     IconSettings,
     IconUserCircle,
+    IconShieldLock,
+    IconFiles,
 } from "@tabler/icons-react";
 
 import { NavDocuments } from "@/components/nav-documents";
@@ -28,11 +30,6 @@ import {
 import { UserLock } from "lucide-react";
 
 const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "",
-    },
     navMain: [
         {
             title: "Dashboard",
@@ -44,6 +41,11 @@ const data = {
             title: "Donations",
             url: "#",
             icon: IconChartBar,
+        },
+        {
+            title: "Contact Form Submissions",
+            url: "#",
+            icon: IconFiles,
         },
     ],
 
@@ -121,6 +123,11 @@ const data = {
             url: "#",
             icon: IconUserCircle,
         },
+        {
+            name: "Roles",
+            url: "#",
+            icon: IconShieldLock,
+        },
     ],
 };
 
@@ -153,7 +160,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser />
             </SidebarFooter>
         </Sidebar>
     );

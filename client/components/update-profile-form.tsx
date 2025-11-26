@@ -276,7 +276,7 @@ export default function EditProfileForm() {
                         value={formData.bio}
                         onChange={handleBioChange}
                         rows={5}
-                        className="resize-none"
+                        className="rounded-none"
                     />
                 </CardContent>
             </Card>
