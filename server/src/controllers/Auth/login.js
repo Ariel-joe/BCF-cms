@@ -26,6 +26,10 @@ export const login = async (req, res) => {
             });
         }
 
+        // update last login date
+        user.lastLogin = new Date();
+        await user.save();
+
         const passwordMatch = await compare(password, user.password);
         if (!passwordMatch) {
             return res.status(StatusCodes.UNAUTHORIZED).json({
