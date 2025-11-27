@@ -52,24 +52,24 @@ export default function page() {
 
     return (
         <>
-            <div className="container max-w-6xl mx-auto px-6 mt-6">
+            <div className="container max-w-5xl mx-auto px-6 mt-6">
                 <header className="mb-8">
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-extrabold text-gray-900">
-                                User Profiles
+                                Team & Board Members Profiles
                             </h1>
                         </div>
                         <div className="text-sm text-gray-500">
                             <span>
-                                {/* Showing {blogs.length}{" "}
-                                {blogs.length === 1 ? "post" : "posts"} */}
+                                Showing {profilesData.length}{" "}
+                                {profilesData.length === 1 ? "profile" : "profiles"}
                             </span>
                         </div>
                     </div>
                 </header>
                 <div className="">
-                    <Table className="mx-auto max-w-6xl">
+                    <Table className="mx-auto max-w-5xl">
                         <TableCaption>
                             A list of profiles (both Team and Board members).
                         </TableCaption>

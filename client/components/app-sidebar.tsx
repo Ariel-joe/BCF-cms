@@ -114,8 +114,8 @@ const data = {
     ],
     userSection: [
         {
-            name: "User List",
-            url: "#",
+            name: "Accounts List",
+            url: "/account",
             icon: IconListDetails,
         },
         {

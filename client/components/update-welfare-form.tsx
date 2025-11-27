@@ -438,377 +438,365 @@ export default function EditWelfareForm() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">Edit Welfare Initiative</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Image Section */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Featured Image *</CardTitle>
+                    <CardDescription>
+                        Update the featured image for your welfare initiative
+                        (required)
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ImageUpload
+                        onImageChange={(file, preview) => {
+                            setFormData({
+                                ...formData,
+                                image: file,
+                                imagePreview: preview,
+                            });
+                        }}
+                        preview={formData.imagePreview}
+                    />
+                    {formData.imagePreview && !formData.image && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                            Currently using existing image. Upload a new one to
+                            replace it.
+                        </p>
+                    )}
+                </CardContent>
+            </Card>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Image Section */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Featured Image *</CardTitle>
-                        <CardDescription>
-                            Update the featured image for your welfare
-                            initiative (required)
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ImageUpload
-                            onImageChange={(file, preview) => {
-                                setFormData({
-                                    ...formData,
-                                    image: file,
-                                    imagePreview: preview,
-                                });
-                            }}
-                            preview={formData.imagePreview}
+            {/* Basic Information */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Basic Information</CardTitle>
+                    <CardDescription>
+                        Enter the title and summary of your welfare initiative
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div>
+                        <Label htmlFor="title">Title *</Label>
+                        <Input
+                            id="title"
+                            placeholder="Enter welfare initiative title"
+                            value={formData.title}
+                            onChange={handleTitleChange}
+                            className="mt-2"
+                            required
                         />
-                        {formData.imagePreview && !formData.image && (
-                            <p className="text-sm text-muted-foreground mt-2">
-                                Currently using existing image. Upload a new one
-                                to replace it.
-                            </p>
-                        )}
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div>
+                        <Label htmlFor="summary">Summary *</Label>
+                        <Textarea
+                            id="summary"
+                            placeholder="Write a brief summary of the welfare initiative"
+                            value={formData.summary}
+                            onChange={handleSummaryChange}
+                            rows={4}
+                            className="mt-2"
+                            required
+                        />
+                    </div>
+                </CardContent>
+            </Card>
 
-                {/* Basic Information */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Basic Information</CardTitle>
-                        <CardDescription>
-                            Enter the title and summary of your welfare
-                            initiative
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+            {/* Category and Status */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Details</CardTitle>
+                    <CardDescription>
+                        Select the category and status of your initiative
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="title">Title *</Label>
+                            <Label htmlFor="category">Category *</Label>
+                            <Select
+                                value={formData.category}
+                                onValueChange={handleCategoryChange}
+                            >
+                                <SelectTrigger id="category" className="mt-2">
+                                    <SelectValue placeholder="Select a category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="internal">
+                                        Internal
+                                    </SelectItem>
+                                    <SelectItem value="friends-of-beacon">
+                                        Friends of Beacon
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label htmlFor="status">Status *</Label>
+                            <Select
+                                value={formData.status}
+                                onValueChange={handleStatusChange}
+                            >
+                                <SelectTrigger id="status" className="mt-2">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="active">
+                                        Active
+                                    </SelectItem>
+                                    <SelectItem value="completed">
+                                        Completed
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div>
+                        <Label htmlFor="startDate">Start Date *</Label>
+                        <Input
+                            id="startDate"
+                            type="date"
+                            value={formData.startDate}
+                            onChange={handleStartDateChange}
+                            className="mt-2"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="budget">Budget</Label>
                             <Input
-                                id="title"
-                                placeholder="Enter welfare initiative title"
-                                value={formData.title}
-                                onChange={handleTitleChange}
+                                id="budget"
+                                placeholder="Enter budget amount"
+                                value={formData.budget}
+                                onChange={handleBudgetChange}
                                 className="mt-2"
-                                required
                             />
                         </div>
                         <div>
-                            <Label htmlFor="summary">Summary *</Label>
-                            <Textarea
-                                id="summary"
-                                placeholder="Write a brief summary of the welfare initiative"
-                                value={formData.summary}
-                                onChange={handleSummaryChange}
-                                rows={4}
-                                className="mt-2"
-                                required
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Category and Status */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Details</CardTitle>
-                        <CardDescription>
-                            Select the category and status of your initiative
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="category">Category *</Label>
-                                <Select
-                                    value={formData.category}
-                                    onValueChange={handleCategoryChange}
-                                >
-                                    <SelectTrigger
-                                        id="category"
-                                        className="mt-2"
-                                    >
-                                        <SelectValue placeholder="Select a category" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="internal">
-                                            Internal
-                                        </SelectItem>
-                                        <SelectItem value="friends-of-beacon">
-                                            Friends of Beacon
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <Label htmlFor="status">Status *</Label>
-                                <Select
-                                    value={formData.status}
-                                    onValueChange={handleStatusChange}
-                                >
-                                    <SelectTrigger id="status" className="mt-2">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="active">
-                                            Active
-                                        </SelectItem>
-                                        <SelectItem value="completed">
-                                            Completed
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        <div>
-                            <Label htmlFor="startDate">Start Date *</Label>
+                            <Label htmlFor="successRate">
+                                Success Rate (%)
+                            </Label>
                             <Input
-                                id="startDate"
-                                type="date"
-                                value={formData.startDate}
-                                onChange={handleStartDateChange}
+                                id="successRate"
+                                placeholder="Enter success rate"
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={formData.successRate}
+                                onChange={handleSuccessRateChange}
                                 className="mt-2"
-                                required
                             />
                         </div>
+                    </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="border-t pt-4 mt-4">
+                        <Label className="text-base font-semibold mb-4 block">
+                            Impact Record
+                        </Label>
+                        <div className="space-y-4">
                             <div>
-                                <Label htmlFor="budget">Budget</Label>
-                                <Input
-                                    id="budget"
-                                    placeholder="Enter budget amount"
-                                    value={formData.budget}
-                                    onChange={handleBudgetChange}
-                                    className="mt-2"
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="successRate">
-                                    Success Rate (%)
+                                <Label htmlFor="individuals">
+                                    Individuals Impacted
                                 </Label>
                                 <Input
-                                    id="successRate"
-                                    placeholder="Enter success rate"
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    value={formData.successRate}
-                                    onChange={handleSuccessRateChange}
+                                    id="individuals"
+                                    placeholder="Enter number or description of individuals impacted"
+                                    value={formData.impactRecord.individuals}
+                                    onChange={(e) =>
+                                        handleImpactRecordChange(
+                                            "individuals",
+                                            e.target.value
+                                        )
+                                    }
                                     className="mt-2"
                                 />
                             </div>
-                        </div>
-
-                        <div className="border-t pt-4 mt-4">
-                            <Label className="text-base font-semibold mb-4 block">
-                                Impact Record
-                            </Label>
-                            <div className="space-y-4">
-                                <div>
-                                    <Label htmlFor="individuals">
-                                        Individuals Impacted
-                                    </Label>
-                                    <Input
-                                        id="individuals"
-                                        placeholder="Enter number or description of individuals impacted"
-                                        value={
-                                            formData.impactRecord.individuals
-                                        }
-                                        onChange={(e) =>
-                                            handleImpactRecordChange(
-                                                "individuals",
-                                                e.target.value
-                                            )
-                                        }
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="communities">
-                                        Communities Impacted
-                                    </Label>
-                                    <Input
-                                        id="communities"
-                                        placeholder="Enter number or description of communities impacted"
-                                        value={
-                                            formData.impactRecord.communities
-                                        }
-                                        onChange={(e) =>
-                                            handleImpactRecordChange(
-                                                "communities",
-                                                e.target.value
-                                            )
-                                        }
-                                        className="mt-2"
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="progress">
-                                        Progress (Quarters)
-                                    </Label>
-                                    <Select
-                                        value={formData.progress}
-                                        onValueChange={(value) =>
-                                            handleProgressChange(value)
-                                        }
-                                    >
-                                        <SelectTrigger
-                                            id="progress"
-                                            className="mt-2"
-                                        >
-                                            <SelectValue placeholder="Select progress" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="0">
-                                                0% - Not Started
-                                            </SelectItem>
-                                            <SelectItem value="25">
-                                                25% - Quarter Complete
-                                            </SelectItem>
-                                            <SelectItem value="50">
-                                                50% - Half Complete
-                                            </SelectItem>
-                                            <SelectItem value="75">
-                                                75% - Three Quarters Complete
-                                            </SelectItem>
-                                            <SelectItem value="100">
-                                                100% - Completed
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Partners */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Partners</CardTitle>
-                        <CardDescription>
-                            Add partners involved in this welfare initiative
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex gap-2">
-                            <Input
-                                placeholder="Enter partner name"
-                                value={formData.partnersInput}
-                                onChange={handlePartnersInputChange}
-                                onKeyPress={(e) => {
-                                    if (e.key === "Enter") {
-                                        e.preventDefault();
-                                        handleAddPartner();
-                                    }
-                                }}
-                            />
-                            <Button
-                                type="button"
-                                onClick={handleAddPartner}
-                                variant="outline"
-                            >
-                                <Plus className="w-4 h-4" />
-                            </Button>
-                        </div>
-
-                        {formData.partners.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                                {formData.partners.map((partner, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-center gap-2 bg-light-blue text-primary px-3 py-1 rounded-full text-sm"
-                                    >
-                                        {partner}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleRemovePartner(index)
-                                            }
-                                            className="hover:text-primary/70"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Content Sections */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Content</CardTitle>
-                        <CardDescription>
-                            Add sections with subtitles and paragraphs. You have{" "}
-                            {formData.content.length} section
-                            {formData.content.length !== 1 ? "s" : ""} and{" "}
-                            {getTotalParagraphs()} paragraph
-                            {getTotalParagraphs() !== 1 ? "s" : ""}.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {formData.content.map((block, index) => (
-                            <div key={block.id} className="relative">
-                                <ContentBlockForm
-                                    block={block}
-                                    onUpdate={(updatedBlock) =>
-                                        handleUpdateContentBlock(
-                                            block.id,
-                                            updatedBlock
+                            <div>
+                                <Label htmlFor="communities">
+                                    Communities Impacted
+                                </Label>
+                                <Input
+                                    id="communities"
+                                    placeholder="Enter number or description of communities impacted"
+                                    value={formData.impactRecord.communities}
+                                    onChange={(e) =>
+                                        handleImpactRecordChange(
+                                            "communities",
+                                            e.target.value
                                         )
                                     }
-                                    blockNumber={index + 1}
+                                    className="mt-2"
                                 />
-                                {formData.content.length > 1 && (
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() =>
-                                            handleRemoveContentBlock(block.id)
-                                        }
-                                        className="mt-3 text-destructive hover:text-destructive"
-                                    >
-                                        <Trash2 className="w-4 h-4 mr-2" />
-                                        Remove Section
-                                    </Button>
-                                )}
                             </div>
-                        ))}
+                            <div>
+                                <Label htmlFor="progress">
+                                    Progress (Quarters)
+                                </Label>
+                                <Select
+                                    value={formData.progress}
+                                    onValueChange={(value) =>
+                                        handleProgressChange(value)
+                                    }
+                                >
+                                    <SelectTrigger
+                                        id="progress"
+                                        className="mt-2"
+                                    >
+                                        <SelectValue placeholder="Select progress" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="0">
+                                            0% - Not Started
+                                        </SelectItem>
+                                        <SelectItem value="25">
+                                            25% - Quarter Complete
+                                        </SelectItem>
+                                        <SelectItem value="50">
+                                            50% - Half Complete
+                                        </SelectItem>
+                                        <SelectItem value="75">
+                                            75% - Three Quarters Complete
+                                        </SelectItem>
+                                        <SelectItem value="100">
+                                            100% - Completed
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
 
+            {/* Partners */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Partners</CardTitle>
+                    <CardDescription>
+                        Add partners involved in this welfare initiative
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex gap-2">
+                        <Input
+                            placeholder="Enter partner name"
+                            value={formData.partnersInput}
+                            onChange={handlePartnersInputChange}
+                            onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleAddPartner();
+                                }
+                            }}
+                        />
                         <Button
                             type="button"
-                            onClick={handleAddContentBlock}
+                            onClick={handleAddPartner}
                             variant="outline"
-                            className="w-full mt-4 bg-transparent"
                         >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Add Content Section
+                            <Plus className="w-4 h-4" />
                         </Button>
-                    </CardContent>
-                </Card>
+                    </div>
 
-                {/* Form Actions */}
-                <div className="flex gap-3 justify-end">
+                    {formData.partners.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {formData.partners.map((partner, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2 bg-light-blue text-primary px-3 py-1 rounded-full text-sm"
+                                >
+                                    {partner}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleRemovePartner(index)
+                                        }
+                                        className="hover:text-primary/70"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Content Sections */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Content</CardTitle>
+                    <CardDescription>
+                        Add sections with subtitles and paragraphs. You have{" "}
+                        {formData.content.length} section
+                        {formData.content.length !== 1 ? "s" : ""} and{" "}
+                        {getTotalParagraphs()} paragraph
+                        {getTotalParagraphs() !== 1 ? "s" : ""}.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {formData.content.map((block, index) => (
+                        <div key={block.id} className="relative">
+                            <ContentBlockForm
+                                block={block}
+                                onUpdate={(updatedBlock) =>
+                                    handleUpdateContentBlock(
+                                        block.id,
+                                        updatedBlock
+                                    )
+                                }
+                                blockNumber={index + 1}
+                            />
+                            {formData.content.length > 1 && (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                        handleRemoveContentBlock(block.id)
+                                    }
+                                    className="mt-3 text-destructive hover:text-destructive"
+                                >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Remove Section
+                                </Button>
+                            )}
+                        </div>
+                    ))}
+
                     <Button
                         type="button"
+                        onClick={handleAddContentBlock}
                         variant="outline"
-                        onClick={() => router.push(`/welfare/${stringId}`)}
-                        disabled={submitting}
+                        className="w-full mt-4 bg-transparent"
                     >
-                        Cancel
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Content Section
                     </Button>
-                    <Button
-                        type="submit"
-                        className="px-8 bg-button-blue hover:bg-light-blue"
-                        disabled={submitting}
-                    >
-                        {submitting ? "Updating..." : "Update Initiative"}
-                    </Button>
-                </div>
-            </form>
-        </div>
+                </CardContent>
+            </Card>
+
+            {/* Form Actions */}
+            <div className="flex gap-3 justify-end">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push(`/welfare/${stringId}`)}
+                    disabled={submitting}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    type="submit"
+                    className="px-8 bg-button-blue hover:bg-light-blue"
+                    disabled={submitting}
+                >
+                    {submitting ? "Updating..." : "Update Initiative"}
+                </Button>
+            </div>
+        </form>
     );
 }
