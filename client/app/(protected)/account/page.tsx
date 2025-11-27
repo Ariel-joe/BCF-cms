@@ -1,3 +1,4 @@
+"use client";
 import {
     Table,
     TableBody,
@@ -8,53 +9,27 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-
-// Mock data based on user schema
-const usersData = [
-    {
-        _id: "1",
-        name: "John Doe",
-        email: "john.doe@example.com",
-        role: "admin",
-        isActive: true,
-        lastLogin: "2025-06-25T10:15:30Z",
-    },
-    {
-        _id: "2",
-        name: "Jane Smith",
-        email: "jane.smith@example.com",
-        role: "editor",
-        isActive: true,
-        lastLogin: "2025-06-22T14:30:00Z",
-    },
-    {
-        _id: "3",
-        name: "Bob Johnson",
-        email: "bob.johnson@example.com",
-        role: "viewer",
-        isActive: false,
-        lastLogin: "2025-06-25T09:45:00Z",
-    },
-    {
-        _id: "4",
-        name: "Alice Williams",
-        email: "alice.williams@example.com",
-        role: "editor",
-        isActive: true,
-        lastLogin: "2025-06-22T14:30:00Z",
-    },
-    {
-        _id: "5",
-        name: "Charlie Brown",
-        email: "charlie.brown@example.com",
-        role: "admin",
-        isActive: false,
-        lastLogin: "2025-06-20T10:15:30Z",
-    },
-];
+import { useAccountStore } from "@/stores/accountStore";
+import { useEffect, useState } from "react";
+import LoadingSkeleton from "@/components/loading-comp";
+import Link from "next/link";
 
 export default function AccountsPage() {
+    const { accounts, fetchAccounts, loading } = useAccountStore();
+    const [fetchAttempted, setFetchAttempted] = useState(false);
+
+    useEffect(() => {
+        fetchAccounts();
+        setFetchAttempted(true);
+    }, []);
+
+    if (loading || !fetchAttempted) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <LoadingSkeleton />
+            </div>
+        );
+    }
     return (
         <main className="container max-w-6xl mx-auto px-6 mt-6">
             <div className="max-w-6xl mx-auto">
@@ -83,11 +58,16 @@ export default function AccountsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {usersData.map((user, index) => (
-                            <TableRow key={user._id}>
+                        {accounts.map((user: any, index: number) => (
+                            <TableRow key={index}>
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell className="font-medium">
-                                    {user.name}
+                                    <Link
+                                        href={`/account/${user.id}`}
+                                        className="hover:underline"
+                                    >
+                                        {user.name}
+                                    </Link>
                                 </TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>
@@ -114,7 +94,14 @@ export default function AccountsPage() {
                                         {user.isActive ? "Active" : "Disabled"}
                                     </Badge>
                                 </TableCell>
-                                <TableCell>{new Date(user.lastLogin).toLocaleString()}</TableCell>
+                                <TableCell>
+                                    {/* separate the date and time */}
+                                    {user.lastLogin
+                                        ? new Date(
+                                              user.lastLogin
+                                          ).toLocaleString()
+                                        : "Never"}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

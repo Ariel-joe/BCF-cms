@@ -120,7 +120,7 @@ const data = {
         },
         {
             name: "Create Account",
-            url: "#",
+            url: "/account/create",
             icon: IconUserCircle,
         },
         {

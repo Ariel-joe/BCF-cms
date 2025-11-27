@@ -1,17 +1,19 @@
 "use client";
-import React, { useEffect } from 'react'
-import { BlogCard } from '@/components/blog-card'
-import { useBlogStore } from '@/stores/blogStore';
+import React, { useEffect } from "react";
+import { BlogCard } from "@/components/blog-card";
+import { useBlogStore } from "@/stores/blogStore";
 import LoadingSkeleton from "@/components/loading-comp";
 
 export default function page() {
     const { blogs, allBlogs, loading } = useBlogStore();
+    const [fetchAttempted, setFetchAttempted] = React.useState(false);
 
     useEffect(() => {
         allBlogs();
+        setFetchAttempted(true);
     }, []);
 
-    if (loading) {
+    if (loading || !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <LoadingSkeleton />
