@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { User } from "../../database/user.js";
 
 // admin to see a list of user accounts
-export const listUsers = async (req, res) => {
+export const listAccounts = async (req, res) => {
     try {
         const user = req.user.id;
         if (!user) throw new Error("unauthorized");
@@ -10,7 +10,7 @@ export const listUsers = async (req, res) => {
         // TODO: update to make the logic for role access auth.
         const users = await User.find();
 
-        resData = users.map((u) => ({
+        const resData = users.map((u) => ({
             id: u._id,
             email: u.email,
             name: u.name,
@@ -161,6 +161,7 @@ export const deactivateUser = async (req, res) => {
 
         res.status(StatusCodes.OK).json({
             success: true,
+            data: account,
             message: "account deactivated successfully",
         });
     } catch (error) {

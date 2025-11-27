@@ -4,13 +4,13 @@ import {
     deactivateUser,
     deleteUser,
     getUserProfile,
-    listUsers,
+    listAccounts,
     updateUserDetails,
 } from "../../controllers/user-management/userController.js";
 
 const userManageRouter = Router();
 
-userManageRouter.get("/accounts", listUsers);
+userManageRouter.get("/account", listAccounts);
 userManageRouter.get("/account/:id", getUserProfile);
 userManageRouter.put("/account/:id", updateUserDetails);
 userManageRouter.delete("/account/:id", deleteUser);

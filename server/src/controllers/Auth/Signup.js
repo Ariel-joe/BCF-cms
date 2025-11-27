@@ -1,27 +1,33 @@
 import { hash } from "bcrypt";
 import { User } from "../../database/user.js";
 import { StatusCodes } from "http-status-codes";
-import mongoose from "mongoose";
+import { Role } from "../../database/role.js";
 
 export const Signup = async (req, res) => {
-    const session = await mongoose.startSession();
     try {
-        session.startTransaction();
-        const { email, password, name, phone } = req.body;
+        const { email, password, name, phone, role } = req.body;
 
         console.log("req cookies", req.cookies);
 
         const hashedPassword = await hash(password, 10);
+
+        const userRole = await Role.findById(role);
+        if (!userRole) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: "Invalid role specified",
+            });
+        }
         const userInfo = {
             email,
             password: hashedPassword,
             name,
             phone,
+            role: userRole.slug,
+            isActive: true,
         };
 
         const newUser = await User.create(userInfo);
-
-        session.commitTransaction();
 
         // Optional: send a welcoming email to the created acount
 
@@ -30,14 +36,11 @@ export const Signup = async (req, res) => {
             message: "Account created successfully!",
         });
     } catch (error) {
-        session.abortTransaction();
         console.error(error);
 
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Failed to create an account!",
         });
-    } finally {
-        session.endSession();
     }
 };

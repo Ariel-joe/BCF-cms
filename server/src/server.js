@@ -12,6 +12,7 @@ import { authMiddleware } from "./middleware/authMiddleware.js";
 import { blogRouter } from "./routes/v1/blogRouter.js";
 import { welfRouter } from "./routes/v1/welfareRouter.js";
 import { profileRouter } from "./routes/v1/profileRouter.js";
+import { userManageRouter } from "./routes/v1/userManageRouter.js";
 
 const app = express();
 
@@ -64,7 +65,8 @@ app.use(
     authMiddleware,
     blogRouter,
     welfRouter,
-    profileRouter
+    profileRouter,
+    userManageRouter
 );
 
 // Passport Google OAuth routes
