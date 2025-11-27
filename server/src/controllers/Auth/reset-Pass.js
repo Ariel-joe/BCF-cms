@@ -6,19 +6,19 @@ import { StatusCodes } from "http-status-codes";
 
 export const resetPassword = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const { token } = req.query;
-
-        // lookup user and token within the session
-        const user = await User.findOne({ email });
-        if (!user) throw new Error("Invalid!, please try again");
+        const { password } = req.body;
+        const { token } = req.params;
 
         // TODO: check on the error during reset password, test the token feature(getting the latest token instead of any)
-        const confirmToken = await Token.findOne({ email }).sort({
+        const confirmToken = await Token.findOne({ token }).sort({
             createdAt: -1,
         });
         if (!confirmToken || confirmToken.token !== token)
             throw new Error("Please try again!");
+
+        // lookup user and token within the session
+        const user = await User.findOne({ email: confirmToken.email });
+        if (!user) throw new Error("Invalid!, please try again");
 
         const hashedPassword = await hash(password, 10);
         user.password = hashedPassword;

@@ -3,14 +3,12 @@ import { TokenGenerator } from "../../scripts/tokenGeneration.js";
 import { User } from "../../database/user.js";
 import { Resend } from "resend";
 import { resetpassTemplate } from "../../templates/reset-pass-temp.js";
-import mongoose from "mongoose";
 import { Token } from "../../database/token.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const forgotPassword = async (req, res) => {
     try {
-        session.startTransaction();
         const { email } = req.body;
 
         const confirmEmail = await User.findOne({ email });
@@ -25,13 +23,13 @@ export const forgotPassword = async (req, res) => {
 
         const newToken = await Token.create({ email, token });
 
-        const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${newToken.token}`;
+        const resetLink = `${process.env.CLIENT_URL}/password-reset?token=${newToken.token}`;
         // send the email with the reset code or link
         const { data, error } = await resend.emails.send({
             from: "Password Reset <support@arieljoe.me>",
             to: email,
             subject: "Password Reset!",
-            html: resetpassTemplate(resetLink),
+            html: resetpassTemplate(resetLink, email),
         });
 
         if (error) throw new Error(error);

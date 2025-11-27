@@ -1,4 +1,4 @@
-export const resetpassTemplate = (resetLink) => `
+export const resetpassTemplate = (resetLink, email) => `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html dir="ltr" lang="en">
   <head>
@@ -65,7 +65,7 @@ export const resetpassTemplate = (resetLink) => `
                       style="font-size:16px;color:rgb(55,65,81);line-height:24px;margin-bottom:16px;margin-top:16px">
                       We received a request to reset the password for your
                       account associated with
-                      <strong>arieljoe00@gmail.com</strong>.
+                      <strong>${email}</strong>.
                     </p>
                     <p
                       style="font-size:16px;color:rgb(55,65,81);line-height:24px;margin-bottom:24px;margin-top:16px">
