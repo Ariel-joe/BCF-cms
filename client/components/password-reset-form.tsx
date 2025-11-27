@@ -13,6 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Eye, EyeOff, KeyRound, Check, X } from "lucide-react";
+import { useAuthStore } from "@/stores/authstore";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface FormData {
     newPassword: string;
@@ -44,6 +47,8 @@ export function PasswordResetForm({ token }: PasswordResetFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { resetPassword } = useAuthStore();
+    const router = useRouter()
 
     // Password requirements
     const passwordRequirements = useMemo(() => {
@@ -109,14 +114,15 @@ export function PasswordResetForm({ token }: PasswordResetFormProps) {
         setIsSubmitting(true);
 
         // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const result = await resetPassword(token, formData.newPassword);
 
-        console.log("Password Reset:", {
-            token,
-            newPassword: formData.newPassword,
-        });
+        if (result) {
+            toast.success("Password reset successfully!");
+            router.push("/login");
+        } else {
+            toast.error("Failed to reset password");
+        }
 
-        alert("Password reset successfully!");
         setIsSubmitting(false);
 
         // Reset form

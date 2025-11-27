@@ -50,6 +50,47 @@ const useAuthStore = create(
                     throw error;
                 }
             },
+
+            forgotPassword: async (email) => {
+                try {
+                    const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/forgot-pass`;
+                    const res = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email }),
+                    });
+
+                    if (res.ok) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (error) {
+                    return false;
+                    console.error(error);
+                    throw error;
+                }
+            },
+
+            resetPassword: async (token, newPassword) => {
+                try {
+                    const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/reset-pass/${token}`;
+                    const res = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ password: newPassword }),
+                    });
+                    if (res.ok) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (error) {
+                    return false;
+                    console.error(error);
+                    throw error;
+                }
+            },
         }),
 
         {

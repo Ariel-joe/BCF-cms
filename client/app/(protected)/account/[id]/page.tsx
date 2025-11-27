@@ -23,6 +23,7 @@ import {
     XCircle,
 } from "lucide-react";
 import { useAccountStore } from "@/stores/accountStore";
+import { useAuthStore } from "@/stores/authstore";
 
 export default function AccountDetailPage() {
     const {
@@ -35,6 +36,7 @@ export default function AccountDetailPage() {
     const [fetchAttempted, setFetchAttempted] = React.useState(false);
     const [isTogglingStatus, setIsTogglingStatus] = React.useState(false);
     const [isSendingReset, setIsSendingReset] = React.useState(false);
+    const { forgotPassword } = useAuthStore();
 
     const params = useParams();
     const id = params?.id;
@@ -99,8 +101,12 @@ export default function AccountDetailPage() {
     const handleSendPasswordReset = async () => {
         setIsSendingReset(true);
         // TODO: Implement password reset logic
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        toast.success(`Password reset email sent to ${accountData?.email}`);
+        const result = await forgotPassword(accountData?.email);
+        if (result) {
+            toast.success(`Password reset email sent to ${accountData?.email}`);
+        } else {
+            toast.error("Failed to send password reset email");
+        }
         setIsSendingReset(false);
     };
 
@@ -262,7 +268,13 @@ export default function AccountDetailPage() {
                                             Last Login
                                         </p>
                                         <p className="text-base">
-                                            {accountData.lastLogin ? formatDate(new Date(accountData.lastLogin)) : "Never"}
+                                            {accountData.lastLogin
+                                                ? formatDate(
+                                                      new Date(
+                                                          accountData.lastLogin
+                                                      )
+                                                  )
+                                                : "Never"}
                                         </p>
                                         <p className="text-xs text-muted-foreground mt-1">
                                             Most recent system access timestamp
