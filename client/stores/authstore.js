@@ -30,7 +30,26 @@ const useAuthStore = create(
                 }
             },
 
-            logout: () => set({ user: null, session: null }),
+            logout: async () => {
+                try {
+                    const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/logout`;
+                    const res = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                    });
+                    if (res.ok) {
+                        set({ user: null, session: null });
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (error) {
+                    return false;
+                    console.error(error);
+                    throw error;
+                }
+            },
         }),
 
         {

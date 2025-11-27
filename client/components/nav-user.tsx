@@ -25,12 +25,27 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuthStore } from "@/stores/authstore";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function NavUser() {
     const { isMobile } = useSidebar();
-    const { user } = useAuthStore();
+    const { user, logout } = useAuthStore();
+    const router = useRouter();
 
-    if(!user) return;
+    const handleLogout = async () => {
+        const loginout = await logout();
+
+        if (loginout) {
+            router.push("/login");
+            toast.success("Logged out successfully");
+        } else {
+            // Handle logout failure if needed
+            toast.error("Logout failed. Please try again.");
+        }
+    };
+
+    if (!user) return;
 
     return (
         <SidebarMenu>
@@ -97,7 +112,10 @@ export function NavUser() {
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="bg-red-500 hover:bg-red-600 text-white">
-                            <button className="flex items-center justify-center gap-1">
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center justify-center gap-1"
+                            >
                                 <IconLogout color="white" />
                                 Log out
                             </button>
