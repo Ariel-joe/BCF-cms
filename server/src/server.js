@@ -29,6 +29,7 @@ app.use(cors(corsOptions));
 // db connection
 connectDb();
 
+
 // Parse JSON bodies
 app.use(express.json());
 

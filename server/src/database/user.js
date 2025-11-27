@@ -13,6 +13,7 @@ const userSchema = new Schema(
             ref: "Role", // Reference to role slug
         },
         isActive: { type: Boolean, default: true, required: true },
+        lastLogin: { type: Date },
     },
     {
         timestamps: true,

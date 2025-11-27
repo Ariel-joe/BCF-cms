@@ -44,8 +44,10 @@ export const updateUser = async (userId) => {
         if (!user) {
             throw new Error("User not found");
         }
-        user.isActive = true;
+        user.lastLogin = new Date();
         await user.save();
+
+        console.log(`✓ Updated lastLogin for user: ${user.email}`);
     } catch (error) {
         
     }
