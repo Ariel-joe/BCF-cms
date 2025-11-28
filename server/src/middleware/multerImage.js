@@ -1,18 +1,33 @@
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../lib/cloudinary.js";
 
-const imageStorage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: "bcf_images",
-        allowed_formats: ["jpg", "png", "jpeg"],
-        limits: { fileSize: 2 * 1024 * 1024 },
-    },
+// --- Modern Multer Setup for images only (memory storage) ---
+const imageStorage = multer.memoryStorage();
+
+const uploadImage = multer({
+    storage: imageStorage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB image limit
 });
-const uploadImage = multer({ storage: imageStorage });
 
 export default uploadImage;
 
-// TODO: put it infront of the create blog controller for it to work properly
-// upload.single("image");
+// --- Cloudinary stream uploader for image only ---
+export const uploadImageToCloudinary = (fileBuffer) => {
+    return new Promise((resolve, reject) => {
+        const options = {
+            folder: "bcf_images",
+            allowed_formats: ["jpg", "png", "jpeg"],
+            resource_type: "image",
+        };
+
+        const stream = cloudinary.uploader.upload_stream(
+            options,
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+
+        stream.end(fileBuffer);
+    });
+};

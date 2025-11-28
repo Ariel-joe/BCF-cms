@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import { BioData } from "../../database/profile.js";
 import { User } from "../../database/user.js";
+import { uploadImageToCloudinary } from "../../middleware/multerImage.js";
 
-// creating profile
 export const createProfile = async (req, res) => {
     try {
         const user = req.user.id;
@@ -12,15 +12,18 @@ export const createProfile = async (req, res) => {
 
         const { name, position, slug, bio } = req.body;
 
-        // Process image
-        const imageUrl = req.file?.path || null;
-
-        if (!imageUrl) {
+        // ------------------------------
+        // Handle Cloudinary Image Upload
+        // ------------------------------
+        if (!req.file) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Featured image is required",
             });
         }
+
+        const uploadedImage = await uploadImageToCloudinary(req.file.buffer);
+        const imageUrl = uploadedImage.secure_url;
 
         const profileData = {
             image: imageUrl,
@@ -48,6 +51,7 @@ export const createProfile = async (req, res) => {
         });
     }
 };
+
 
 // fetching all profiles
 export const fetchAllProfiles = async (req, res) => {
@@ -92,7 +96,6 @@ export const getProfileById = async (req, res) => {
     }
 };
 
-// update profile by id
 export const updateProfileById = async (req, res) => {
     try {
         const profileId = req.params.id;
@@ -105,6 +108,7 @@ export const updateProfileById = async (req, res) => {
                 message: "Unauthorized",
             });
         }
+
         const existingProfile = await BioData.findById(profileId);
         if (!existingProfile) {
             return res.status(StatusCodes.NOT_FOUND).json({
@@ -112,13 +116,26 @@ export const updateProfileById = async (req, res) => {
                 message: "Profile not found",
             });
         }
+
+        // ------------------------------
+        // Handle Cloudinary Image Upload (optional)
+        // ------------------------------
+        let imageUrl = existingProfile.image; // default to old image
+        if (req.file) {
+            const uploadedImage = await uploadImageToCloudinary(
+                req.file.buffer
+            );
+            imageUrl = uploadedImage.secure_url;
+        }
+
         const updatedData = {
-            image: req.file?.path || existingProfile.image,
+            image: imageUrl || existingProfile.image,
             name: req.body.name || existingProfile.name,
             position: req.body.position || existingProfile.position,
             slug: req.body.slug || existingProfile.slug,
             bio: req.body.bio || existingProfile.bio,
         };
+
         const updatedProfile = await BioData.findByIdAndUpdate(
             profileId,
             updatedData,
@@ -140,6 +157,7 @@ export const updateProfileById = async (req, res) => {
         });
     }
 };
+
 
 // delete profile by Id
 export const deleteProfileById = async (req, res) => {

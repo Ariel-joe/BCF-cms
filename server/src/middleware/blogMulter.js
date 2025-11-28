@@ -1,33 +1,46 @@
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../lib/cloudinary.js";
 
-// Since CloudinaryStorage doesn't support per-field configs easily,
-// we'll use a custom approach with multer's storage engine
+// --- Modern Multer Setup (Memory Storage) ---
+const storage = multer.memoryStorage();
 
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: async (req, file) => {
-        // Different config based on field name
-        if (file.fieldname === "image") {
-            return {
+// This remains the same variable name
+const upload = multer({ storage });
+
+// Keep the same exported middleware (field names unchanged)
+export const uploadBlogFiles = upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "pdf", maxCount: 1 },
+]);
+
+// --- New helper to replace CloudinaryStorage (stream upload) ---
+export const uploadToCloudinary = (fileBuffer, fieldname) => {
+    return new Promise((resolve, reject) => {
+        // Choose folder based on the fieldname
+        let options = {};
+
+        if (fieldname === "image") {
+            options = {
                 folder: "bcf_images",
                 allowed_formats: ["jpg", "png", "jpeg"],
-                resource_type: "auto",
+                resource_type: "image",
             };
-        } else if (file.fieldname === "pdf") {
-            return {
+        } else if (fieldname === "pdf") {
+            options = {
                 folder: "bcf_documents",
                 resource_type: "raw",
                 allowed_formats: ["pdf"],
             };
         }
-    },
-});
 
-const upload = multer({ storage });
+        const stream = cloudinary.uploader.upload_stream(
+            options,
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
 
-export const uploadBlogFiles = upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "pdf", maxCount: 1 },
-]);
+        stream.end(fileBuffer);
+    });
+};

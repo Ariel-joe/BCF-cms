@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import { Blog } from "../../database/blog.js";
 import { User } from "../../database/user.js";
 import { StatusCodes } from "http-status-codes";
+import { uploadToCloudinary } from "../../middleware/blogMulter.js";
 
-// create a blog
+/// create a blog
 export const createBlog = async (req, res) => {
     try {
         const { title, summary, pdfTitle } = req.body;
@@ -25,19 +26,40 @@ export const createBlog = async (req, res) => {
             throw new Error("User not found");
         }
 
-        const imageUrl =
-            req.files?.image && req.files.image.length > 0
-                ? req.files.image[0].path
-                : null;
+        // ------------------------------
+        // NEW CLOUDINARY UPLOAD HANDLING
+        // ------------------------------
+
+        let imageUrl = null;
+        let pdfUrl = null;
+
+        // Upload image if present
+        if (req.files?.image && req.files.image.length > 0) {
+            const imageFile = req.files.image[0];
+            const uploadedImage = await uploadToCloudinary(
+                imageFile.buffer,
+                "image" // fieldname
+            );
+            imageUrl = uploadedImage.secure_url;
+        }
 
         if (!imageUrl) {
             throw new Error("Featured image is required");
         }
 
-        const pdfUrl =
-            req.files?.pdf && req.files.pdf.length > 0
-                ? req.files.pdf[0].path
-                : null;
+        // Upload PDF if present
+        if (req.files?.pdf && req.files.pdf.length > 0) {
+            const pdfFile = req.files.pdf[0];
+            const uploadedPdf = await uploadToCloudinary(
+                pdfFile.buffer,
+                "pdf" // fieldname
+            );
+            pdfUrl = uploadedPdf.secure_url;
+        }
+
+        // ------------------------------
+        // CREATE BLOG
+        // ------------------------------
 
         const newBlog = await Blog.create({
             image: imageUrl,
@@ -143,10 +165,10 @@ export const updateBlogById = async (req, res) => {
             });
         }
 
-        // Parse the body data
+        // Clone req.body
         const updatedData = { ...req.body };
 
-        // Parse tags if it's a string array format from FormData
+        // Parse tags[] if sent as string from FormData
         if (req.body["tags[]"]) {
             updatedData.tags = Array.isArray(req.body["tags[]"])
                 ? req.body["tags[]"]
@@ -166,33 +188,33 @@ export const updateBlogById = async (req, res) => {
             }
         }
 
-        // Handle image upload (optional - only update if new file provided)
-        const imageUrl =
-            req.files?.image && req.files.image.length > 0
-                ? req.files.image[0].path
-                : null;
-
-        if (imageUrl) {
-            updatedData.image = imageUrl;
+        // ----------------------------
+        // Handle Image Upload (Optional)
+        // ----------------------------
+        if (req.files?.image && req.files.image.length > 0) {
+            const uploadedImage = await uploadToCloudinary(
+                req.files.image[0].buffer,
+                "image"
+            );
+            updatedData.image = uploadedImage.secure_url;
         }
 
-        // Handle PDF upload/removal
-        const pdfUrl =
-            req.files?.pdf && req.files.pdf.length > 0
-                ? req.files.pdf[0].path
-                : null;
-
-        if (pdfUrl) {
-            // New PDF uploaded
+        // ----------------------------
+        // Handle PDF Upload / Removal
+        // ----------------------------
+        if (req.files?.pdf && req.files.pdf.length > 0) {
+            const uploadedPdf = await uploadToCloudinary(
+                req.files.pdf[0].buffer,
+                "pdf"
+            );
             updatedData.pdf = {
                 title: req.body.pdfTitle || req.files.pdf[0].originalname,
-                url: pdfUrl,
+                url: uploadedPdf.secure_url,
             };
         } else if (req.body.removePdf === "true") {
-            // User wants to remove PDF
             updatedData.pdf = null;
         }
-        // If neither condition is true, keep existing PDF
+        // else keep existing PDF
 
         const updatedBlog = await Blog.findByIdAndUpdate(id, updatedData, {
             new: true,

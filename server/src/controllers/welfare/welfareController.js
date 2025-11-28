@@ -1,12 +1,15 @@
 import { StatusCodes } from "http-status-codes";
 import { User } from "../../database/user.js";
 import { Welfare } from "../../database/welfare.js";
+import { uploadImageToCloudinary } from "../../middleware/multerImage.js";
 
 export const createWelfare = async (req, res) => {
     try {
         const { title, startDate, category, status, summary } = req.body;
 
         const userId = req.user.id;
+
+        console.log("attempting to create welfare...");
 
         // Validate user
         const loggedInUser = await User.findById(userId);
@@ -17,15 +20,15 @@ export const createWelfare = async (req, res) => {
             });
         }
 
-        // Process image
-        const imageUrl = req.file?.path || null;
+        console.log("attempting to process image...");
 
-        if (!imageUrl) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                success: false,
-                message: "Featured image is required",
-            });
-        }
+        // Process image using Cloudinary
+        const uploadedImage = await uploadImageToCloudinary(req.file.buffer);
+        const imageUrl = uploadedImage.secure_url;
+
+        console.log("imageUrl:", imageUrl);
+
+        console.log("processing image...");
 
         // Parse content from JSON string
         let content;
@@ -38,9 +41,23 @@ export const createWelfare = async (req, res) => {
             });
         }
 
+        // Parse impactRecord from JSON string (sent from frontend)
+        let impactRecord = { individuals: "0", communities: "0" };
+        if (req.body.impactRecord) {
+            try {
+                impactRecord = JSON.parse(req.body.impactRecord);
+            } catch (error) {
+                console.log("Could not parse impactRecord, using defaults");
+            }
+        }
+
+        console.log("processing content including impact record...");
+
         // Parse partners array - it comes as partners[] from FormData
         const partners = req.body.partners || [];
         const partnersArray = Array.isArray(partners) ? partners : [partners];
+
+        console.log("this is the coordinator id:", loggedInUser._id);
 
         // Create welfare data
         const welfareData = {
@@ -57,10 +74,7 @@ export const createWelfare = async (req, res) => {
             progress: req.body.progress || "0%",
             budget: req.body.budget || "N/A",
             successRate: req.body.successRate || "0%",
-            impactRecord: {
-                individuals: req.body.individuals || "0",
-                communities: req.body.communities || "0",
-            },
+            impactRecord: impactRecord,
         };
 
         const newWelfare = await Welfare.create(welfareData);
@@ -127,8 +141,9 @@ export const updateWelfareById = async (req, res) => {
             });
         }
 
-        // Process uploaded image (if any). If no new image is provided, keep existing image.
-        const imageUrl = req.file?.path || existing.image || null;
+        // Process image using Cloudinary
+        const uploadedImage = await uploadImageToCloudinary(req.file.buffer);
+        const imageUrl = uploadedImage.secure_url;
 
         // Parse content if provided (it may be a JSON string)
         let content = existing.content;
@@ -215,7 +230,6 @@ export const updateWelfareById = async (req, res) => {
         });
     }
 };
-
 
 // fetch welfare by id
 export const getWelfareById = async (req, res) => {
