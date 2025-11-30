@@ -30,9 +30,13 @@ import {
     EyeOff,
 } from "lucide-react";
 import Link from "next/link";
+import { useRoleStore } from "@/stores/roleStore";
+import { toast } from "sonner";
+import { useAccountStore } from "@/stores/accountStore";
+import { useRouter } from "next/navigation";
 
 interface Role {
-    _id: string;
+    id: string;
     name: string;
 }
 
@@ -61,28 +65,14 @@ export function CreateAccountForm() {
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
-    const [roles, setRoles] = useState<Role[]>([]);
-    const [isLoadingRoles, setIsLoadingRoles] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const { loading, fetchRoles, roles } = useRoleStore();
+    const { createAccount } = useAccountStore();
+    const router = useRouter();
 
     // Simulate fetching roles from server
     useEffect(() => {
-        const fetchRoles = async () => {
-            setIsLoadingRoles(true);
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            // Mock roles data from server
-            const mockRoles: Role[] = [
-                { _id: "1", name: "admin" },
-                { _id: "2", name: "editor" },
-                { _id: "3", name: "viewer" },
-                { _id: "4", name: "moderator" },
-            ];
-            setRoles(mockRoles);
-            setIsLoadingRoles(false);
-        };
-
         fetchRoles();
     }, []);
 
@@ -127,9 +117,6 @@ export function CreateAccountForm() {
 
         setIsSubmitting(true);
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
         const accountData = {
             name: formData.name,
             email: formData.email,
@@ -138,18 +125,27 @@ export function CreateAccountForm() {
             role: formData.role,
         };
 
-        console.log("Account Created:", accountData);
-        alert("Account created successfully!");
-        setIsSubmitting(false);
+        const success = await createAccount(accountData);
 
-        // Reset form
-        setFormData({
-            email: "",
-            password: "",
-            name: "",
-            isActive: true,
-            role: "",
-        });
+        console.log("Account Created:", accountData);
+
+        if (success) {
+            toast.success("Account created successfully!");
+
+            router.push("/account");
+            // Reset form
+            setFormData({
+                email: "",
+                password: "",
+                name: "",
+                isActive: true,
+                role: "",
+            });
+        } else {
+            toast.error("Failed to create account.");
+        }
+
+        setIsSubmitting(false);
     };
 
     const handleInputChange = (
@@ -266,11 +262,6 @@ export function CreateAccountForm() {
                                 )}
                             </button>
                         </div>
-                        {errors.password && (
-                            <p className="text-sm text-red-500">
-                                {errors.password}
-                            </p>
-                        )}
                     </div>
 
                     {/* Role Dropdown */}
@@ -287,7 +278,7 @@ export function CreateAccountForm() {
                             onValueChange={(value) =>
                                 handleInputChange("role", value)
                             }
-                            disabled={isLoadingRoles}
+                            disabled={loading}
                         >
                             <SelectTrigger
                                 id="role"
@@ -295,18 +286,15 @@ export function CreateAccountForm() {
                             >
                                 <SelectValue
                                     placeholder={
-                                        isLoadingRoles
+                                        loading
                                             ? "Loading roles..."
                                             : "Select a role"
                                     }
                                 />
                             </SelectTrigger>
                             <SelectContent>
-                                {roles.map((role) => (
-                                    <SelectItem
-                                        key={role._id}
-                                        value={role.name}
-                                    >
+                                {roles.map((role: Role) => (
+                                    <SelectItem key={role.id} value={role.id}>
                                         <span className="capitalize">
                                             {role.name}
                                         </span>
@@ -314,11 +302,6 @@ export function CreateAccountForm() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.role && (
-                            <p className="text-sm text-red-500">
-                                {errors.role}
-                            </p>
-                        )}
                     </div>
 
                     {/* isActive Toggle */}
@@ -354,8 +337,8 @@ export function CreateAccountForm() {
                                 variant="outline"
                                 className="bg-transparent"
                             >
-                            Cancel
-                        </Button>
+                                Cancel
+                            </Button>
                         </Link>
                         <Button
                             type="submit"

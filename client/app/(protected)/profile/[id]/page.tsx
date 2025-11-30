@@ -1,6 +1,7 @@
 "use client";
 import LoadingSkeleton from "@/components/loading-comp";
 import { useProfileStore } from "@/stores/profileStore";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
@@ -91,14 +92,14 @@ export default function page() {
                             <div>
                                 {/* delete button and update button */}
                                 <div className="max-w-4xl mx-auto    flex gap-3">
-                                    <a
+                                    <Link
                                         href={`/profile/edit/${
                                             profile.id ?? profile._id
                                         }`}
                                         className="items-center text-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
                                     >
                                         Update
-                                    </a>
+                                    </Link>
 
                                     <button
                                         type="button"

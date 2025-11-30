@@ -5,6 +5,31 @@ const useAccountStore = create((set) => ({
     accountData: null,
     loading: false,
 
+    createAccount: async (accountDetails) => {
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/auth/signup`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(accountDetails),
+                }
+            );
+
+            if (res.ok) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    },
+
     fetchAccounts: async () => {
         try {
             set({ loading: true });
@@ -58,7 +83,7 @@ const useAccountStore = create((set) => ({
     updateAccountDetails: async (id, updatedData) => {
         try {
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/account/update/${id}`,
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/account/${id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -82,7 +107,7 @@ const useAccountStore = create((set) => ({
 
     deleteAccount: async (id) => {
         try {
-            const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/account/delete/${id}`;
+            const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/account/${id}`;
             const res = await fetch(url, {
                 method: "DELETE",
                 headers: {

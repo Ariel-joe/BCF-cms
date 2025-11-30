@@ -1,6 +1,7 @@
 "use client";
 import LoadingSkeleton from "@/components/loading-comp";
 import { useBlogStore } from "@/stores/blogStore";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
@@ -243,14 +244,14 @@ export default function BlogDetailPage() {
                 <div>
                     {/* delete button and update button */}
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 flex gap-3">
-                        <a
+                        <Link
                             href={`/blog/edit/${
                                 singleBlog.id ?? singleBlog._id
                             }`}
                             className="items-center text-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
                         >
                             Update
-                        </a>
+                        </Link>
 
                         <button
                             type="button"

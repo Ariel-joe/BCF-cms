@@ -21,9 +21,12 @@ import {
     Clock,
     CheckCircle,
     XCircle,
+    Trash2,
+    Pencil,
 } from "lucide-react";
 import { useAccountStore } from "@/stores/accountStore";
 import { useAuthStore } from "@/stores/authstore";
+import Link from "next/link";
 
 export default function AccountDetailPage() {
     const {
@@ -32,11 +35,13 @@ export default function AccountDetailPage() {
         loading,
         activateAccount,
         deactivateAccount,
+        deleteAccount,
     } = useAccountStore();
     const [fetchAttempted, setFetchAttempted] = React.useState(false);
     const [isTogglingStatus, setIsTogglingStatus] = React.useState(false);
     const [isSendingReset, setIsSendingReset] = React.useState(false);
     const { forgotPassword } = useAuthStore();
+    const [isDeleting, setIsDeleting] = React.useState(false);
 
     const params = useParams();
     const id = params?.id;
@@ -99,15 +104,42 @@ export default function AccountDetailPage() {
     };
 
     const handleSendPasswordReset = async () => {
+        if (!accountData?.email) return;
+
         setIsSendingReset(true);
-        // TODO: Implement password reset logic
-        const result = await forgotPassword(accountData?.email);
-        if (result) {
-            toast.success(`Password reset email sent to ${accountData?.email}`);
-        } else {
-            toast.error("Failed to send password reset email");
+        try {
+            const result = await forgotPassword(accountData.email);
+            if (result) {
+                toast.success(
+                    `Password reset email sent to ${accountData.email}`
+                );
+            } else {
+                toast.error("Failed to send password reset email");
+            }
+        } catch (error) {
+            toast.error("An error occurred while sending password reset");
+        } finally {
+            setIsSendingReset(false);
         }
-        setIsSendingReset(false);
+    };
+
+    const handleDelete = async () => {
+
+        setIsDeleting(true);
+        try {
+            const result = await deleteAccount(stringId);
+            if (result) {
+                toast.success("Account deleted successfully");
+                router.push("/account");
+            } else {
+                toast.error("Failed to delete account");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            toast.error("An error occurred while deleting the account");
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     // Show loading state
@@ -292,11 +324,28 @@ export default function AccountDetailPage() {
                         <CardHeader>
                             <CardTitle>Account Management</CardTitle>
                             <CardDescription>
-                                Manage necessary user actions including password
-                                reset and account status control
+                                Manage necessary user actions including edit,
+                                password reset, and account status control
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            {/* Update Account Button */}
+                            <div>
+                                <Link href={`/account/edit/${stringId}`}>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full bg-transparent"
+                                    >
+                                        <Pencil className="mr-2 h-4 w-4" />
+                                        Edit Account Details
+                                    </Button>
+                                </Link>
+
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    Update name, email, role, or account status
+                                </p>
+                            </div>
+
                             {/* Activate/Deactivate Button */}
                             <div>
                                 <Button
@@ -349,6 +398,29 @@ export default function AccountDetailPage() {
                                 <p className="text-xs text-muted-foreground mt-2">
                                     Send a secure password reset link to the
                                     user's email address
+                                </p>
+                            </div>
+
+                            {/* Delete Account Button */}
+                            <div className="pt-4 border-t">
+                                <Button
+                                    onClick={handleDelete}
+                                    disabled={isDeleting}
+                                    variant="destructive"
+                                    className="w-full"
+                                >
+                                    {isDeleting ? (
+                                        "Deleting..."
+                                    ) : (
+                                        <>
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Delete Account Permanently
+                                        </>
+                                    )}
+                                </Button>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    Permanently remove this account from the
+                                    system. This action cannot be undone.
                                 </p>
                             </div>
                         </CardContent>
