@@ -88,9 +88,9 @@ app.get(
     })
 );
 
-app.get("/", authMiddleware, (req, res) => {
+app.get("/", (req, res) => {
     res.json({
-        message: "Dear all, I'm back!",
+        message: "Welcome!",
     });
 });
 
