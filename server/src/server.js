@@ -16,6 +16,8 @@ import { userManageRouter } from "./routes/v1/userManageRouter.js";
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // TODO: uncompress the server later
 // app.use(compression())
 app.use(express.urlencoded({ extended: true }));
