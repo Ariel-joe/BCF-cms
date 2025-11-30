@@ -54,7 +54,7 @@ app.use(
         }),
         cookie: {
             secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
         },
     })
 );
