@@ -5,7 +5,7 @@ import { Role } from "../../database/role.js";
 
 export const Signup = async (req, res) => {
     try {
-        const { email, password, name, phone, role } = req.body;
+        const { email, password, name, phone, role, isActive } = req.body;
 
         console.log("req cookies", req.cookies);
 
@@ -24,7 +24,7 @@ export const Signup = async (req, res) => {
             name,
             phone,
             role: userRole.slug,
-            isActive: true,
+            isActive
         };
 
         const newUser = await User.create(userInfo);

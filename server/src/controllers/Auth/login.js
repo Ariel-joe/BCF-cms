@@ -58,7 +58,7 @@ export const login = async (req, res) => {
             secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
-            domain: ".infitechcreatives.com",
+            domain: process.env.DOMAIN || undefined,
         };
 
         res.cookie(process.env.AUTH_COOKIE_NAME, token, cookieOptions);

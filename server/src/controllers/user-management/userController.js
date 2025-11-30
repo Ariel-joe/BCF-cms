@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { User } from "../../database/user.js";
+import { Role } from "../../database/role.js";
 
 // admin to see a list of user accounts
 export const listAccounts = async (req, res) => {
@@ -85,11 +86,19 @@ export const updateUserDetails = async (req, res) => {
                 message: "user not found",
             });
         }
+
+        let newRole = existingUser.role;
+
+        if (req.body.role) {
+             newRole = await Role.findById(req.body.role);
+        }
+        
         const updatedData = {
             name: req.body.name || existingUser.name,
             email: req.body.email || existingUser.email,
-            role: req.body.role || existingUser.role,
+            role: newRole.slug || existingUser.role,
         };
+
         const updatedUser = await User.findByIdAndUpdate(
             profileId,
             updatedData,
@@ -180,14 +189,13 @@ export const deleteUser = async (req, res) => {
         const userId = req.user?.id;
         if (!userId) throw new Error("unauthorized");
 
-        const account = await User.findById(profileId);
+        const account = await User.findByIdAndDelete(profileId);
         if (!account) {
             return res.status(StatusCodes.NOT_FOUND).json({
                 success: false,
                 message: "account not found",
             });
         }
-        await account.remove();
 
         res.status(StatusCodes.OK).json({
             success: true,
