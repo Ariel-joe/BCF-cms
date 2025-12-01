@@ -44,7 +44,7 @@ const data = {
         },
         {
             title: "Contact Form Submissions",
-            url: "#",
+            url: "/form",
             icon: IconFiles,
         },
     ],
@@ -122,11 +122,6 @@ const data = {
             name: "Create Account",
             url: "/account/create",
             icon: IconUserCircle,
-        },
-        {
-            name: "Roles",
-            url: "#",
-            icon: IconShieldLock,
         },
     ],
 };
