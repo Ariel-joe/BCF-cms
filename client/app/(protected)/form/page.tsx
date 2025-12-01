@@ -109,7 +109,7 @@ export default function FormSubmissionsPage() {
     }
 
     return (
-        <div className="container max-w-6xl mx-auto px-6 mt-6">
+        <div className="container max-w-7xl mx-auto px-6 mt-6">
             <header className="mb-8">
                 <div className="flex items-center justify-between">
                     <div>
@@ -226,7 +226,7 @@ export default function FormSubmissionsPage() {
                                             {submission.isRead ? (
                                                 ""
                                             ) : (
-                                                <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                                <span className="w-2 h-2 rounded-full font-bold text-blue-500 p-0.5 text-xs">unread</span>
                                             )}
                                         </TableCell>
                                         <TableCell>
@@ -245,11 +245,11 @@ export default function FormSubmissionsPage() {
                                             {submission.message.length > 30
                                                 ? submission.message.substring(
                                                       0,
-                                                      27
+                                                      47
                                                   ) + "..."
                                                 : submission.message}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-center">
                                             {formatDate(submission.createdAt)}
                                         </TableCell>
                                     </TableRow>
