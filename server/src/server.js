@@ -69,10 +69,10 @@ app.use(passport.session());
 app.use(
     "/api/v1",
     authRouter,
-    authMiddleware,
     formSubmissionRouter,
     blogRouter,
     welfRouter,
+    authMiddleware,
     profileRouter,
     userManageRouter,
     roleRouter
