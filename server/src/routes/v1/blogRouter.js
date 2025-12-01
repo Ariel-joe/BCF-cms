@@ -7,13 +7,14 @@ import {
     updateBlogById,
 } from "../../controllers/blogs/blogController.js";
 import { uploadBlogFiles } from "../../middleware/blogMulter.js";
+import { authMiddleware } from "../../middleware/authMiddleware.js";
 
 const blogRouter = Router();
 
-blogRouter.post("/blog/create", uploadBlogFiles, createBlog);
 blogRouter.get("/blog", allBlogs);
-blogRouter.get("/blog/:id", getBlogById);
-blogRouter.put("/blog/update/:id", uploadBlogFiles, updateBlogById); 
-blogRouter.delete("/blog/delete/:id", deleteBlogById);
+blogRouter.post("/blog/create",authMiddleware, uploadBlogFiles, createBlog);
+blogRouter.get("/blog/:id", authMiddleware, getBlogById);
+blogRouter.put("/blog/update/:id", authMiddleware, uploadBlogFiles, updateBlogById); 
+blogRouter.delete("/blog/delete/:id", authMiddleware, deleteBlogById);
 
 export { blogRouter };
