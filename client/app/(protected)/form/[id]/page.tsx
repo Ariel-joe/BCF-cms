@@ -70,29 +70,36 @@ export default function FormSubmissionDetails() {
             </div> */}
 
             {/* Redesigned Card */}
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden border-none shadow-none">
                 {/* Header */}
-                <div className="px-8 py-6">
+                <div className="px-8 py-2">
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-sm text-muted-foreground">
-                            {formatDate(submissionData.createdAt)}
-                        </span>
+                        <p className="text-sm text-muted-foreground uppercase inline-block tracking-widest">
+                            From
+                        </p>
                     </div>
 
                     {/* Sender Info */}
                     <h2 className="text-xl font-semibold">
                         {submissionData.FName} {submissionData.LName}
                     </h2>
-                    <p className="text-muted-foreground">{submissionData.email}</p>
-                    <p className="text-muted-foreground">{submissionData.phone}</p>
+                    <p className="text-muted-foreground">
+                        {submissionData.email}
+                    </p>
+                    <p className="text-muted-foreground">
+                        {submissionData.phone}
+                    </p>
+                    <span className="text-sm text-muted-foreground">
+                        {formatDate(submissionData.createdAt)}
+                    </span>
                 </div>
 
                 {/* Content */}
                 <CardContent className="px-8 py-6 space-y-6">
                     {/* Subject */}
-                    <div className="pb-4 border-b border-dashed">
-                        <p className="text-sm text-muted-foreground uppercase tracking-widest">
-                            Subject
+                    <div className="flex items-center justify-even gap-2 py-1 border-b border-black border-dashed">
+                        <p className="text-sm text-muted-foreground uppercase inline-block tracking-widest">
+                            Subject:
                         </p>
                         <p className="text-lg font-semibold">
                             {formatSubject(submissionData.subject)}
@@ -104,7 +111,7 @@ export default function FormSubmissionDetails() {
                         <p className="text-sm text-muted-foreground uppercase tracking-widest mb-3">
                             Message
                         </p>
-                        <div className="bg-slate-50 border p-5 rounded-lg">
+                        <div className="bg-slate-50 border p-5">
                             <p className="whitespace-pre-line leading-relaxed">
                                 {submissionData.message}
                             </p>
