@@ -72,8 +72,8 @@ app.use(
     formSubmissionRouter,
     blogRouter,
     welfRouter,
-    authMiddleware,
     profileRouter,
+    authMiddleware,
     userManageRouter,
     roleRouter
 );
