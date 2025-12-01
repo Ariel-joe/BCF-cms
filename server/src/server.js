@@ -63,12 +63,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// public routers
+
 // routes
 app.use(
     "/api/v1",
     authRouter,
-    formSubmissionRouter,
     authMiddleware,
+    formSubmissionRouter,
     blogRouter,
     welfRouter,
     profileRouter,
