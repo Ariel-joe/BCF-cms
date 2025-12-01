@@ -14,10 +14,11 @@ import { welfRouter } from "./routes/v1/welfareRouter.js";
 import { profileRouter } from "./routes/v1/profileRouter.js";
 import { userManageRouter } from "./routes/v1/userManageRouter.js";
 import { roleRouter } from "./routes/v1/roleRouter.js";
+import { formSubmissionRouter } from "./routes/v1/formSubmissionRouter.js";
 
 const app = express();
 
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // TODO: uncompress the server later
 // app.use(compression())
@@ -30,12 +31,10 @@ const corsOptions = {
     credentials: true,
 };
 
-
 app.use(cors(corsOptions));
 
 // db connection
 connectDb();
-
 
 // Parse JSON bodies
 app.use(express.json());
@@ -68,6 +67,7 @@ app.use(passport.session());
 app.use(
     "/api/v1",
     authRouter,
+    formSubmissionRouter,
     authMiddleware,
     blogRouter,
     welfRouter,
