@@ -58,8 +58,8 @@ export default function FormSubmissionDetails() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto">
-            {/* Back Button */}
+        <div className="max-w-6xl mx-auto">
+            {/* Back Button
             <div className="mb-6">
                 <Link href="/form">
                     <Button variant="outline" size="sm">
@@ -67,14 +67,14 @@ export default function FormSubmissionDetails() {
                         Back to Submissions
                     </Button>
                 </Link>
-            </div>
+            </div> */}
 
             {/* Redesigned Card */}
-            <Card className="shadow-xl border rounded-xl overflow-hidden">
+            <Card className="overflow-hidden">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-slate-50 via-white to-slate-50 border-b px-8 py-6">
+                <div className="px-8 py-6">
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-sm text-muted-foreground italic">
+                        <span className="text-sm text-muted-foreground">
                             {formatDate(submissionData.createdAt)}
                         </span>
                     </div>
