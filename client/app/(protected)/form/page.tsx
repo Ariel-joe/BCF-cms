@@ -152,7 +152,7 @@ export default function FormSubmissionsPage() {
                     <SelectTrigger className="w-full sm:w-[250px]">
                         <SelectValue placeholder="Filter by category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-none">
                         <SelectItem value="all">All Categories</SelectItem>
                         <SelectItem value="general inquiry">
                             General Inquiry
@@ -180,12 +180,8 @@ export default function FormSubmissionsPage() {
                     <TableHeader>
                         <TableRow className="bg-gradient-to-r from-[#fd6c12] via-[#ee5108] to-[#c53b09]">
                             <TableHead className="text-white"></TableHead>
-                            <TableHead className="text-white">
-                                First Name
-                            </TableHead>
-                            <TableHead className="text-white">
-                                Last Name
-                            </TableHead>
+                            <TableHead className="text-white">Name</TableHead>
+
                             <TableHead className="text-white">Email</TableHead>
                             <TableHead className="text-white">
                                 Subject
@@ -226,13 +222,13 @@ export default function FormSubmissionsPage() {
                                             {submission.isRead ? (
                                                 ""
                                             ) : (
-                                                <span className="w-2 h-2 rounded-full font-bold text-blue-500 p-0.5 text-xs">unread</span>
+                                                <span className="w-2 h-2 rounded-full font-bold text-blue-500 p-0.5 text-xs">
+                                                    unread
+                                                </span>
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            {submission.FName}
-                                        </TableCell>
-                                        <TableCell>
+                                            {submission.FName}{" "}
                                             {submission.LName}
                                         </TableCell>
                                         <TableCell>
