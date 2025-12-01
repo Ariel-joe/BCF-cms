@@ -11,13 +11,14 @@ import { authMiddleware } from "../../middleware/authMiddleware.js";
 
 const profileRouter = Router();
 
+profileRouter.get("/profile", fetchAllProfiles);
+profileRouter.get("/profile/:id", getProfileById);
 profileRouter.post(
     "/profile/create",
+    authMiddleware,
     uploadImage.single("image"),
     createProfile
 );
-profileRouter.get("/profile", fetchAllProfiles);
-profileRouter.get("/profile/:id", authMiddleware,getProfileById);
 profileRouter.put(
     "/profile/update/:id",
     authMiddleware,

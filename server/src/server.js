@@ -15,6 +15,7 @@ import { profileRouter } from "./routes/v1/profileRouter.js";
 import { userManageRouter } from "./routes/v1/userManageRouter.js";
 import { roleRouter } from "./routes/v1/roleRouter.js";
 import { formSubmissionRouter } from "./routes/v1/formSubmissionRouter.js";
+import { donationRouter } from "./routes/v1/donationsRouter.js";
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-    origin: [process.env.CLIENT_URL],
+    origin: [process.env.CLIENT_URL, "http://192.168.0.11:5173"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -64,6 +65,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // public routers
+app.use("/api/v1", donationRouter);
 
 // routes
 app.use(
