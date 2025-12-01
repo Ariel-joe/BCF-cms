@@ -58,7 +58,9 @@ export const login = async (req, res) => {
             secure: process.env.NODE_ENV === "production",
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
-            domain: process.env.DOMAIN || undefined,
+            ...(process.env.NODE_ENV === "production" && {
+                domain: process.env.DOMAIN,
+            }),
         };
 
         res.cookie(process.env.AUTH_COOKIE_NAME, token, cookieOptions);
