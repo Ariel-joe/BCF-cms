@@ -77,7 +77,7 @@ export function LoginForm({
             } else {
                 // Success: reset inputs, show toast and redirect to dashboard
                 toast.success("Logged in successfully");
-                router.push("/dashboard");
+                router.push("/donations");
                 setEmail("");
                 setPassword("");
                 setErrors({});

@@ -31,15 +31,15 @@ import { UserLock } from "lucide-react";
 
 const data = {
     navMain: [
-        {
-            title: "Dashboard",
-            url: "/dashboard",
-            icon: IconDashboard,
-        },
+        // {
+        //     title: "Dashboard",
+        //     url: "/dashboard",
+        //     icon: IconDashboard,
+        // },
 
         {
             title: "Donations",
-            url: "#",
+            url: "/donations",
             icon: IconChartBar,
         },
         {
