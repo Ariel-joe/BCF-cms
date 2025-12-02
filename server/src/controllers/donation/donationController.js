@@ -1,8 +1,11 @@
 // handle all the donation logic including the authorization to paystach.
+import { StatusCodes } from "http-status-codes";
 import {
     initializePaystackTransaction,
     verifyPaystackTransaction,
 } from "../../scripts/paystackHelper.js";
+import { Donation } from "../../database/donation.js";
+import { User } from "../../database/user.js";
 
 export const initiateDonation = async (req, res) => {
     try {
@@ -96,6 +99,7 @@ export const verifyDonation = async (req, res) => {
                 "Verified Transaction/donation record:",
                 donationRecord
             );
+            await Donation.create(donationRecord);
 
             return res.status(200).json({
                 success: true,
@@ -115,6 +119,30 @@ export const verifyDonation = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error during verification.",
+        });
+    }
+};
+
+// fetch all donations
+export const fetchAllDonations = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const loggedInUser = await User.findById(userId);
+
+        if (!loggedInUser) throw new Error("unathorized access");
+
+        const donations = await Donation.find().sort({ createdAt: -1 });
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            message: "Donations fetched successfully",
+            data: donations,
+        });
+    } catch (error) {
+        console.error("Fetch Donations Error:", error);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: "Internal Server Error while fetching donations.",
         });
     }
 };
