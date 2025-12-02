@@ -67,28 +67,21 @@ export function LoginForm({
 
             // Treat explicit ok:false or returned error(s) as failure; otherwise success
             if (data && data.ok === false) {
-                const message =
-                    data.error ||
-                    (data.errors && data.errors[0]) ||
-                    "Login failed";
+                const message = "Login failed";
                 setErrors({ submit: message });
                 toast.error(message);
             } else if (data && (data.error || data.errors)) {
-                const message =
-                    data.error ||
-                    (data.errors && data.errors[0]) ||
-                    "Login failed";
+                const message = "Login failed";
                 setErrors({ submit: message });
                 toast.error(message);
             } else {
                 // Success: reset inputs, show toast and redirect to dashboard
+                toast.success("Logged in successfully");
+                router.push("/dashboard");
                 setEmail("");
                 setPassword("");
                 setErrors({});
-                toast.success("Logged in successfully");
-                // small delay to allow the browser to apply Set-Cookie from the response
-                await new Promise((resolve) => setTimeout(resolve, 300));
-                router.push("/dashboard");
+                
             }
         } catch (err: any) {
             setLoading(false);
