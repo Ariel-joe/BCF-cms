@@ -6,36 +6,25 @@ import {
 
 export const initiateDonation = async (req, res) => {
     try {
-        const { email, amount, phone } = req.body;
+        const { email, amount, phone, firstName, lastName } = req.body;
 
         // 1. Validate Input
-        if (!email || !amount) {
+        if (!email || !amount || !firstName || !lastName || amount <= 0) {
             return res.status(400).json({
                 success: false,
-                message: "Email and Amount are required",
+                message:
+                    "Email, Amount, First Name, and Last Name are required",
             });
         }
 
-        // 2. Prepare Paystack Payload
-        // Note: ensure 'amount' is in kobo (cents) if not already handled by frontend.
-        const params = {
-            email,
-            amount: amount.toString(), // Paystack expects string or integer
-            // Pass extra data to Paystack via metadata
-            metadata: {
-                phone,
-                custom_fields: [
-                    {
-                        display_name: "Phone Number",
-                        variable_name: "phone_number",
-                        value: phone,
-                    },
-                ],
-            },
-        };
-
         // 3. Request Access Code from Paystack
-        const response = await initializePaystackTransaction(params);
+        const response = await initializePaystackTransaction({
+            email,
+            amount,
+            firstName,
+            lastName,
+            phone,
+        });
 
         // 4. Check Paystack's Logical Response (status: false means logic error, e.g., invalid key)
         if (!response.status) {
@@ -93,12 +82,25 @@ export const verifyDonation = async (req, res) => {
             // - Save the transaction details (reference, amount, donor email) to your database.
             // - Send confirmation emails to the donor/admin.
 
-            console.log("Verified Transaction Data:", transactionData);
+            const donationRecord = {
+                reference: transactionData.reference,
+                status: transactionData.status,
+                amount: transactionData.amount,
+                method: transactionData.authorization.channel,
+                email: transactionData.customer.email,
+                fullName: `${transactionData.metadata.first_name} ${transactionData.metadata.last_name}`,
+                paidAt: transactionData.paid_at,
+            };
+
+            console.log(
+                "Verified Transaction/donation record:",
+                donationRecord
+            );
 
             return res.status(200).json({
                 success: true,
                 message: "Transaction successfully verified and completed.",
-                data: transactionData,
+                data: donationRecord,
             });
         } else {
             // Payment status is 'abandoned', 'failed', 'pending', etc.

@@ -1,7 +1,42 @@
 import https from "https";
 
-export const initializePaystackTransaction = (params) => {
+/**
+ * Initialize Paystack Transaction (No Axios)
+ */
+export const initializePaystackTransaction = ({
+    email,
+    amount,
+    firstName,
+    lastName,
+    phone,
+}) => {
     return new Promise((resolve, reject) => {
+        const postData = JSON.stringify({
+            email,
+            amount,
+            currency: "KES",
+            first_name: firstName,
+            last_name: lastName,
+            metadata: {
+                phone,
+                first_name: firstName,
+                last_name: lastName,
+                custom_fields: [
+                    {
+                        display_name: "Phone Number",
+                        variable_name: "phone_number",
+                        value: phone,
+                    },
+                    {
+                        display_name: "Full Name",
+                        variable_name: "full_name",
+                        value: `${firstName} ${lastName}`,
+                    },
+                ],
+            },
+            callback_url: `${process.env.FRONTEND_URL}/donation/success`,
+        });
+
         const options = {
             hostname: "api.paystack.co",
             port: 443,
@@ -10,6 +45,7 @@ export const initializePaystackTransaction = (params) => {
             headers: {
                 Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
                 "Content-Type": "application/json",
+                "Content-Length": Buffer.byteLength(postData),
             },
         };
 
@@ -22,21 +58,21 @@ export const initializePaystackTransaction = (params) => {
 
             res.on("end", () => {
                 try {
-                    // Parse the JSON response from Paystack
-                    const parsedData = JSON.parse(data);
-                    resolve(parsedData);
+                    const json = JSON.parse(data);
+                    resolve(json);
                 } catch (error) {
-                    reject(new Error("Failed to parse Paystack response"));
+                    reject(
+                        new Error(
+                            "Failed to parse Paystack initialization response"
+                        )
+                    );
                 }
             });
         });
 
-        req.on("error", (error) => {
-            reject(error);
-        });
+        req.on("error", (err) => reject(err));
 
-        // Write the parameters to the request body
-        req.write(JSON.stringify(params));
+        req.write(postData);
         req.end();
     });
 };
