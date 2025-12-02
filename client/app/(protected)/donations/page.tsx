@@ -166,7 +166,7 @@ export default function DashboardPage() {
                             {donations.length} transactions
                         </TableCaption>
                         <TableHeader>
-                            <TableRow className="bg-gradient-to-r from-[#008b07] to-[#0b5c11]">
+                            <TableRow className="bg-gradient-to-r from-[#009689] to-[#0a655f]">
                                 <TableHead className="text-white"></TableHead>
                                 <TableHead className="text-white">
                                     Donor Name
