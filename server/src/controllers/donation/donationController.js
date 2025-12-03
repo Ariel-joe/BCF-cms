@@ -13,7 +13,7 @@ export const initiateDonation = async (req, res) => {
 
         // 1. Validate Input
         if (!email || !amount || !firstName || !lastName || amount <= 0) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
                 message:
                     "Email, Amount, First Name, and Last Name are required",
@@ -31,7 +31,7 @@ export const initiateDonation = async (req, res) => {
 
         // 4. Check Paystack's Logical Response (status: false means logic error, e.g., invalid key)
         if (!response.status) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
                 message: response.message || "Failed to initialize transaction",
             });
@@ -39,14 +39,14 @@ export const initiateDonation = async (req, res) => {
 
         // 5. Send Access Code to Frontend
         // The frontend will use data.access_code with inline.js
-        return res.status(200).json({
+        return res.status(StatusCodes.OK).json({
             success: true,
             message: "Transaction initialized",
             data: response.data, // Contains: access_code, authorization_url, reference
         });
     } catch (error) {
         console.error("Paystack Controller Error:", error);
-        return res.status(500).json({
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Internal Server Error",
         });
@@ -58,7 +58,7 @@ export const verifyDonation = async (req, res) => {
         const { reference } = req.params;
 
         if (!reference) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
                 message: "Transaction reference is required for verification.",
             });
@@ -69,7 +69,7 @@ export const verifyDonation = async (req, res) => {
 
         // 2. Check Paystack response status
         if (!verificationResponse.status) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
                 success: false,
                 message:
                     verificationResponse.message ||
@@ -101,14 +101,14 @@ export const verifyDonation = async (req, res) => {
             );
             await Donation.create(donationRecord);
 
-            return res.status(200).json({
+            return res.status(StatusCodes.OK).json({
                 success: true,
                 message: "Transaction successfully verified and completed.",
                 data: donationRecord,
             });
         } else {
             // Payment status is 'abandoned', 'failed', 'pending', etc.
-            return res.status(402).json({
+            return res.status(StatusCodes.PAYMENT_REQUIRED).json({
                 success: false,
                 message: `Payment status is not successful: ${transactionData.status}`,
                 data: transactionData,
@@ -116,7 +116,7 @@ export const verifyDonation = async (req, res) => {
         }
     } catch (error) {
         console.error("Verification Controller Error:", error);
-        return res.status(500).json({
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Internal Server Error during verification.",
         });
