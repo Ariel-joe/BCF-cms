@@ -12,6 +12,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
     Select,
     SelectContent,
@@ -20,19 +21,27 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
 
 export default function FormSubmissionsPage() {
     const { submissions, getSubmissions, loading } = useFormSubmissionStore();
     const [fetchAttempted, setFetchAttempted] = React.useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterCategory, setFilterCategory] = useState("all");
+    const [refreshing, setRefreshing] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         getSubmissions();
         setFetchAttempted(true);
     }, [getSubmissions]);
+
+    // Handle refresh
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        await getSubmissions();
+        setRefreshing(false);
+    };
 
     // Format date with today/yesterday logic
     const formatDate = (dateString: string) => {
@@ -130,7 +139,7 @@ export default function FormSubmissionsPage() {
                 </div>
             </header>
 
-            {/* Search and Filter Section */}
+            {/* Search, Filter, and Refresh Section */}
             <div className="mb-6 flex flex-col sm:flex-row gap-4">
                 {/* Search Input */}
                 <div className="relative flex-1">
@@ -173,6 +182,21 @@ export default function FormSubmissionsPage() {
                         <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                 </Select>
+
+                {/* Refresh Button */}
+                <Button
+                    onClick={handleRefresh}
+                    disabled={refreshing}
+                    variant="outline"
+                    className="w-full sm:w-auto"
+                >
+                    <RefreshCw
+                        className={`h-4 w-4 mr-2 ${
+                            refreshing ? "animate-spin" : ""
+                        }`}
+                    />
+                    {refreshing ? "Refreshing..." : "Refresh"}
+                </Button>
             </div>
 
             <div className="overflow-hidden">
@@ -181,7 +205,6 @@ export default function FormSubmissionsPage() {
                         <TableRow className="bg-gradient-to-r from-[#fd6c12] via-[#ee5108] to-[#c53b09]">
                             <TableHead className="text-white"></TableHead>
                             <TableHead className="text-white">Name</TableHead>
-
                             <TableHead className="text-white">Email</TableHead>
                             <TableHead className="text-white">
                                 Subject
@@ -195,10 +218,18 @@ export default function FormSubmissionsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredSubmissions.length === 0 ? (
+                        {refreshing ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="h-64">
+                                    <div className="flex items-center justify-center">
+                                        <LoadingSkeleton />
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : filteredSubmissions.length === 0 ? (
                             <TableRow>
                                 <TableCell
-                                    colSpan={7}
+                                    colSpan={6}
                                     className="text-center py-8 text-gray-500"
                                 >
                                     {searchQuery || filterCategory !== "all"
