@@ -8,7 +8,6 @@ export const initializePaystackTransaction = ({
     amount,
     firstName,
     lastName,
-    phone,
 }) => {
     return new Promise((resolve, reject) => {
         const postData = JSON.stringify({
@@ -18,15 +17,9 @@ export const initializePaystackTransaction = ({
             first_name: firstName,
             last_name: lastName,
             metadata: {
-                phone,
                 first_name: firstName,
                 last_name: lastName,
                 custom_fields: [
-                    {
-                        display_name: "Phone Number",
-                        variable_name: "phone_number",
-                        value: phone,
-                    },
                     {
                         display_name: "Full Name",
                         variable_name: "full_name",

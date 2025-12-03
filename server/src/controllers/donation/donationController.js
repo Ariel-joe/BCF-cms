@@ -9,7 +9,7 @@ import { User } from "../../database/user.js";
 
 export const initiateDonation = async (req, res) => {
     try {
-        const { email, amount, phone, firstName, lastName } = req.body;
+        const { email, amount, firstName, lastName } = req.body;
 
         // 1. Validate Input
         if (!email || !amount || !firstName || !lastName || amount <= 0) {
@@ -26,7 +26,6 @@ export const initiateDonation = async (req, res) => {
             amount,
             firstName,
             lastName,
-            phone,
         });
 
         // 4. Check Paystack's Logical Response (status: false means logic error, e.g., invalid key)
