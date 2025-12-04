@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/authstore";
+import { Eye, EyeOff } from "lucide-react";
 
 export function LoginForm({
     className,
@@ -29,6 +30,7 @@ export function LoginForm({
         submit?: string;
     }>({});
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const validate = () => {
         const e: typeof errors = {};
@@ -81,11 +83,11 @@ export function LoginForm({
                 setEmail("");
                 setPassword("");
                 setErrors({});
-                
             }
         } catch (err: any) {
             setLoading(false);
-            const message = err?.message || "Login failed";
+            const message =
+                err?.message || "Incorrect email or password please try again.";
             setErrors({ submit: message });
             toast.error(message);
         }
@@ -96,11 +98,14 @@ export function LoginForm({
             <form onSubmit={handleSubmit}>
                 <FieldGroup>
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="text-xl font-bold">
-                            Login to BCF portal.
-                        </h1>
+                        <img
+                            src={"/bcf-logo-nobg.png"}
+                            width={250}
+                            height={100}
+                            alt="BCF Logo"
+                        />
                     </div>
-                    <Field className="">
+                    {/* <Field className="">
                         <Button
                             variant="outline"
                             type="button"
@@ -135,7 +140,7 @@ export function LoginForm({
                             Continue with Google
                         </Button>
                     </Field>
-                    <FieldSeparator>Or</FieldSeparator>
+                    <FieldSeparator>Or</FieldSeparator> */}
 
                     <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -158,16 +163,32 @@ export function LoginForm({
 
                     <Field>
                         <FieldLabel htmlFor="password">Password</FieldLabel>
-                        <Input
-                            id="password"
-                            type="password"
-                            placeholder="******"
-                            className="rounded-none py-5"
-                            required
-                            value={password}
-                            onChange={(ev) => setPassword(ev.target.value)}
-                            aria-invalid={!!errors.password}
-                        />
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="******"
+                                className="rounded-none py-5"
+                                required
+                                value={password}
+                                onChange={(ev) => setPassword(ev.target.value)}
+                                aria-invalid={!!errors.password}
+                            />
+
+                            {/* show password */}
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
+
                         {errors.password && (
                             <p className="text-sm text-red-500">
                                 {errors.password}
