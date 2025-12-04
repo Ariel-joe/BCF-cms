@@ -104,17 +104,17 @@ export function NavUser() {
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
+                        {/* <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <IconUserCircle />
                                 Account
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="bg-red-500 hover:bg-red-600 text-white">
+                        <DropdownMenuSeparator /> */}
+                        <DropdownMenuItem className="">
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center justify-center gap-1"
+                                className="flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white w-full p-1 rounded-sm"
                             >
                                 <IconLogout color="white" />
                                 Log out
