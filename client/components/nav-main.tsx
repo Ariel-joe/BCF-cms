@@ -11,6 +11,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavMain({
     items,
@@ -21,22 +22,27 @@ export function NavMain({
         icon?: Icon;
     }[];
 }) {
+    const pathname = usePathname() || "/";
     return (
         <SidebarGroup>
-            <SidebarGroupContent className="flex flex-col gap-2">
-                <SidebarMenu>
-                    {items.map((item) => (
+            <SidebarMenu>
+                {items.map((item) => {
+                    const isActive = pathname === item.url;
+                    return (
                         <SidebarMenuItem key={item.title}>
-                            <Link href={item.url}>
-                                <SidebarMenuButton tooltip={item.title}>
+                            <SidebarMenuButton asChild
+                                tooltip={item.title}
+                                isActive={isActive}
+                            >
+                                <Link href={item.url}>
                                     {item.icon && <item.icon />}
                                     <span>{item.title}</span>
-                                </SidebarMenuButton>
-                            </Link>
+                                </Link>
+                            </SidebarMenuButton>
                         </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-            </SidebarGroupContent>
+                    );
+                })}
+            </SidebarMenu>
         </SidebarGroup>
     );
 }
