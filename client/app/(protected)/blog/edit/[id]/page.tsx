@@ -8,9 +8,9 @@ export const metadata = {
 export default function EditBlogPage() {
     return (
         <main className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-7xl mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-2xl font-bold mb-2 text-page-title">
+                    <h1 className="text-3xl font-extrabold text-gray-900">
                         Edit Blog Post
                     </h1>
                 </div>

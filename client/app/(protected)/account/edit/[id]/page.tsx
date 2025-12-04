@@ -197,10 +197,10 @@ export default function EditAccountForm() {
     return (
         <div className="container mx-auto mt-6 max-w-3xl">
             <div className="mb-6">
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-3xl font-extrabold text-gray-900">
                     Edit Account
                 </h1>
-                <p className="text-muted-foreground mt-2">
+                <p className="text-sm text-gray-600 mt-2">
                     Update account details, role assignment, and status
                 </p>
             </div>

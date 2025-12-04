@@ -59,6 +59,9 @@ export default function page() {
                             <h1 className="text-3xl font-extrabold text-gray-900">
                                 Team & Board Members Profiles
                             </h1>
+                            <p className="text-sm text-gray-600 mt-2">
+                                Manage and view profiles of your team and board members.
+                            </p>
                         </div>
                         <div className="text-sm text-gray-500">
                             <span>

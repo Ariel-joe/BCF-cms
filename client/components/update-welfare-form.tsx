@@ -706,7 +706,7 @@ export default function EditWelfareForm() {
                             {formData.partners.map((partner, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center gap-2 bg-light-blue text-primary px-3 py-1 rounded-full text-sm"
+                                    className="flex items-center gap-2 bg-light-blue text-white px-3 py-1 rounded-full text-sm"
                                 >
                                     {partner}
                                     <button

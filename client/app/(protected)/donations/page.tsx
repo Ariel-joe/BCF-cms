@@ -99,10 +99,10 @@ export default function DashboardPage() {
         <div className="container mx-auto p-6 space-y-6">
             {/* Page Header */}
             <div className="mb-6">
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-3xl font-extrabold text-gray-900">
                     Donations Dashboard
                 </h1>
-                <p className="text-muted-foreground mt-2">
+                <p className="text-sm text-gray-600 mt-2">
                     Overview of donation analytics and transaction history
                 </p>
             </div>

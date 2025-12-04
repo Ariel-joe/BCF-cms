@@ -46,10 +46,10 @@ export default function AccountsPage() {
             <div className="max-w-6xl mx-auto">
                 <div className="mb-8 flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">
+                        <h1 className="text-3xl font-extrabold text-gray-900">
                             User Accounts
                         </h1>
-                        <p className="text-muted-foreground mt-2">
+                        <p className="text-sm text-gray-600 mt-2">
                             Manage and view all registered user accounts
                         </p>
                     </div>
