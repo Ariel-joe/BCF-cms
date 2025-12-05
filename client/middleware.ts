@@ -58,7 +58,7 @@ export const config = {
         "/dashboard/:path*",
         "/blog/:path*",
         "/welfare/:path*",
-        "/donation/:path*",
+        "/donations/:path*",
         "/account/:path*",
         "/profile/:path*",
     ],
