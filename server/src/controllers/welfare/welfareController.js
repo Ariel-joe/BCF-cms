@@ -20,15 +20,9 @@ export const createWelfare = async (req, res) => {
             });
         }
 
-        console.log("attempting to process image...");
-
         // Process image using Cloudinary
         const uploadedImage = await uploadImageToCloudinary(req.file.buffer);
         const imageUrl = uploadedImage.secure_url;
-
-        console.log("imageUrl:", imageUrl);
-
-        console.log("processing image...");
 
         // Parse content from JSON string
         let content;
@@ -143,8 +137,11 @@ export const updateWelfareById = async (req, res) => {
         // ✅ Handle image upload - use req.file.path (not buffer)
         let imageUrl = existing.image; // Keep existing image by default
         if (req.file) {
-            // If using Cloudinary storage, the path is already the Cloudinary URL
-            imageUrl = req.file.path;
+            // Process image using Cloudinary
+            const uploadedImage = await uploadImageToCloudinary(
+                req.file.buffer
+            );
+            imageUrl = uploadedImage.secure_url;
 
             // If you're using memory storage and need to upload to Cloudinary manually:
             // const uploadedImage = await uploadImageToCloudinary(req.file.buffer);
