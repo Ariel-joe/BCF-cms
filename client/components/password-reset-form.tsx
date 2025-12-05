@@ -146,7 +146,7 @@ export function PasswordResetForm({ token }: PasswordResetFormProps) {
                     <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                         <KeyRound className="h-6 w-6 text-primary" />
                     </div>
-                    <CardTitle>Reset Password</CardTitle>
+                    <CardTitle className="font-extrabold">Reset Password</CardTitle>
                     <CardDescription>
                         Create a new secure password for your account
                     </CardDescription>
@@ -156,7 +156,7 @@ export function PasswordResetForm({ token }: PasswordResetFormProps) {
                     <div className="space-y-2">
                         <Label
                             htmlFor="newPassword"
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 font-semibold"
                         >
                             <Lock className="h-4 w-4 text-muted-foreground" />
                             New Password
@@ -264,7 +264,7 @@ export function PasswordResetForm({ token }: PasswordResetFormProps) {
                     <div className="space-y-2">
                         <Label
                             htmlFor="confirmPassword"
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 font-semibold"
                         >
                             <Lock className="h-4 w-4 text-muted-foreground" />
                             Confirm Password
