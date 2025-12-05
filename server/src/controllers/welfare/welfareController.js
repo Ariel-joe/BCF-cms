@@ -116,8 +116,7 @@ export const getAllWelfares = async (req, res) => {
         });
     }
 };
-
-// update welfare by id(including updatting image)
+// Update welfare by id (including updating image)
 export const updateWelfareById = async (req, res) => {
     try {
         const welfareId = req.params.id;
@@ -141,9 +140,16 @@ export const updateWelfareById = async (req, res) => {
             });
         }
 
-        // Process image using Cloudinary
-        const uploadedImage = await uploadImageToCloudinary(req.file.buffer);
-        const imageUrl = uploadedImage.secure_url;
+        // ✅ Handle image upload - use req.file.path (not buffer)
+        let imageUrl = existing.image; // Keep existing image by default
+        if (req.file) {
+            // If using Cloudinary storage, the path is already the Cloudinary URL
+            imageUrl = req.file.path;
+
+            // If you're using memory storage and need to upload to Cloudinary manually:
+            // const uploadedImage = await uploadImageToCloudinary(req.file.buffer);
+            // imageUrl = uploadedImage.secure_url;
+        }
 
         // Parse content if provided (it may be a JSON string)
         let content = existing.content;
@@ -183,7 +189,7 @@ export const updateWelfareById = async (req, res) => {
         } = req.body;
 
         const updateData = {};
-        if (imageUrl !== undefined) updateData.image = imageUrl;
+        if (imageUrl !== existing.image) updateData.image = imageUrl; // ✅ Only update if changed
         if (title !== undefined) updateData.title = title;
         if (startDate !== undefined)
             updateData.startDate = startDate
@@ -193,7 +199,7 @@ export const updateWelfareById = async (req, res) => {
         if (status !== undefined) updateData.status = status;
         if (summary !== undefined) updateData.summary = summary;
         if (content !== undefined) updateData.content = content;
-        if (partnersArray !== undefined) updateData.partners = partnersArray;
+        if (partnersArray.length > 0) updateData.partners = partnersArray; // ✅ Fixed condition
         if (progress !== undefined) updateData.progress = progress;
         if (budget !== undefined) updateData.budget = budget;
         if (successRate !== undefined) updateData.successRate = successRate;
@@ -214,7 +220,7 @@ export const updateWelfareById = async (req, res) => {
         const updatedWelfare = await Welfare.findByIdAndUpdate(
             welfareId,
             updateData,
-            { new: true }
+            { new: true, runValidators: true }
         );
 
         return res.status(StatusCodes.OK).json({
