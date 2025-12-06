@@ -36,18 +36,21 @@ const useAuthStore = create(
                     const res = await fetch(url, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        credentials: "include",
+                        credentials: "include", 
                     });
+
                     if (res.ok) {
                         set({ user: null, session: null });
+
+                        window.location.href = "/login";
+
                         return true;
                     } else {
                         return false;
                     }
                 } catch (error) {
+                    console.error("Logout error:", error);
                     return false;
-                    console.error(error);
-                    throw error;
                 }
             },
 

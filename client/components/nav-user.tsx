@@ -38,6 +38,7 @@ export function NavUser() {
 
         if (loginout) {
             router.push("/login");
+            router.refresh();
             toast.success("Logged out successfully");
         } else {
             // Handle logout failure if needed

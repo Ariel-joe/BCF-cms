@@ -35,6 +35,14 @@ export function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
+    const cookieName = process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME || "auth_token";
+    const authCookie = req.cookies.get(cookieName);
+
+    // ✅ Check if cookie exists AND has a value
+    if (authCookie && authCookie.value) {
+        return NextResponse.next();
+    }
+
     const hasAuthCookie = cookieNames.some((name) =>
         Boolean(req.cookies.get(name))
     );
@@ -51,6 +59,8 @@ export function middleware(req: NextRequest) {
     );
     return NextResponse.redirect(loginUrl);
 }
+
+
 
 // Only run middleware for known protected URL prefixes (these correspond to routes inside the (protected) route group).
 export const config = {
