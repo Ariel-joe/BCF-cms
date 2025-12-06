@@ -5,9 +5,7 @@
     "scripts": {
         "dev": "next dev --turbopack",
         "build": "next build --turbopack",
-        "start": "next start",
-        "lint": "eslint",
-        "setup:create-account": "npx shadcn@latest add button card input label select switch && echo 'All create account form components installed successfully!'"
+        "start": "next start"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",

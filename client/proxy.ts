@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Protect specific application routes (those under the (protected) route group).
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
 
     // Allow public files and next internals
