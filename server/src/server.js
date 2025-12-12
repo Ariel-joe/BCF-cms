@@ -26,7 +26,7 @@ app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-    origin: [process.env.CLIENT_URL, process.env.WEBSITE_URL],
+    origin: [process.env.CLIENT_URL, process.env.WEBSITE_URL, "http://10.146.164.100:5173"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

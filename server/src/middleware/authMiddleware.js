@@ -7,7 +7,6 @@ import { StatusCodes } from "http-status-codes";
 export const authMiddleware = async (req, res, next) => {
     try {
         const token = req.cookies[process.env.AUTH_COOKIE_NAME];
-        console.log("req cookie", req.cookies);        
 
         if (!token) throw new Error("token not found");
 

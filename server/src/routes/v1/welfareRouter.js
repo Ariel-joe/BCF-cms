@@ -12,8 +12,8 @@ import { authMiddleware } from "../../middleware/authMiddleware.js";
 const welfRouter = Router();
 
 welfRouter.get("/welfare", getAllWelfares);
+welfRouter.get("/welfare/:id", getWelfareById);
 welfRouter.post("/welfare/create",authMiddleware, uploadImage.single("image"), createWelfare);
-welfRouter.get("/welfare/:id", authMiddleware, getWelfareById);
 welfRouter.put(
     "/welfare/update/:id",
     authMiddleware,
