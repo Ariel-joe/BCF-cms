@@ -45,24 +45,24 @@ export default function FormSubmissionsPage() {
 
     // Format date with today/yesterday logic
     const formatDate = (dateString: string) => {
+        // Parse the MongoDB date string
         const date = new Date(dateString);
-        const today = new Date();
-        const yesterday = new Date(today);
+        const now = new Date();
+
+        // Calculate the difference in days
+        const diffTime = now.getTime() - date.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        // Get the date parts in local timezone for more accurate comparison
+        const dateDay = date.toLocaleDateString();
+        const todayDay = now.toLocaleDateString();
+        const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayDay = yesterday.toLocaleDateString();
 
-        // Reset time to midnight for accurate date comparison (using setHours)
-        const dateOnly = new Date(date);
-        dateOnly.setHours(0, 0, 0, 0);
-
-        const todayOnly = new Date(today);
-        todayOnly.setHours(0, 0, 0, 0);
-
-        const yesterdayOnly = new Date(yesterday);
-        yesterdayOnly.setHours(0, 0, 0, 0);
-
-        if (dateOnly.getTime() === todayOnly.getTime()) {
+        if (dateDay === todayDay) {
             return "Today";
-        } else if (dateOnly.getTime() === yesterdayOnly.getTime()) {
+        } else if (dateDay === yesterdayDay) {
             return "Yesterday";
         } else {
             return date.toLocaleDateString("en-US", {
