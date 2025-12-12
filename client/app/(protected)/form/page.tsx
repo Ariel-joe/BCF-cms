@@ -50,22 +50,15 @@ export default function FormSubmissionsPage() {
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
 
-        // Reset time to compare only dates
-        const dateOnly = new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate()
-        );
-        const todayOnly = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate()
-        );
-        const yesterdayOnly = new Date(
-            yesterday.getFullYear(),
-            yesterday.getMonth(),
-            yesterday.getDate()
-        );
+        // Reset time to midnight for accurate date comparison (using setHours)
+        const dateOnly = new Date(date);
+        dateOnly.setHours(0, 0, 0, 0);
+
+        const todayOnly = new Date(today);
+        todayOnly.setHours(0, 0, 0, 0);
+
+        const yesterdayOnly = new Date(yesterday);
+        yesterdayOnly.setHours(0, 0, 0, 0);
 
         if (dateOnly.getTime() === todayOnly.getTime()) {
             return "Today";

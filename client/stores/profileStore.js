@@ -1,4 +1,4 @@
-const { create } = require("zustand");
+import { create } from "zustand";
 
 const useProfileStore = create((set) => ({
     profile: null,

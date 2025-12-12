@@ -272,7 +272,8 @@ export default function page() {
                                             Budget:
                                         </span>
                                         <span className="text-neutral-900">
-                                            Ksh {welfareData.budget}
+                                            Budget: Ksh{" "}
+                                            {parseInt(welfareData.budget).toLocaleString()}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
