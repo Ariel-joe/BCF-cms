@@ -1,24 +1,67 @@
 "use client";
-import LoadingSkeleton from "@/components/loading-comp";
-import { useProfileStore } from "@/stores/profileStore";
-import Link from "next/link";
+
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 
-export default function page() {
+import LoadingSkeleton from "@/components/loading-comp";
+import { useProfileStore } from "@/stores/profileStore";
+import { useAuthStore } from "@/stores/authstore";
+
+export default function Page() {
+    const router = useRouter();
+    const params = useParams();
+    const stringId = String(params?.id);
+
+    /* =========================
+       STORES
+    ========================== */
     const { getProfileById, profile, loading, deleteProfile } =
         useProfileStore();
-    const [fetchAttempted, setFetchAttempted] = React.useState(false);
 
-    const params = useParams();
-    const id = params?.id;
-    const stringId = String(id);
-    const router = useRouter();
+    const { user } = useAuthStore();
 
+    /* =========================
+       LOCAL STATE
+    ========================== */
+    const [fetchAttempted, setFetchAttempted] = useState(false);
+
+    /* =========================
+       PERMISSIONS
+       (loaded at login)
+    ========================== */
+    const permissions: string[] = user?.permissions || [];
+
+    const canUpdateProfile = permissions.includes("update_profile");
+    const canDeleteProfile = permissions.includes("delete_profile");
+
+    /* =========================
+       FETCH PROFILE
+    ========================== */
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (stringId && stringId !== "undefined") {
+                await getProfileById(stringId);
+                setFetchAttempted(true);
+            }
+        };
+
+        fetchProfile();
+    }, [stringId, getProfileById]);
+
+    /* =========================
+       DELETE HANDLER
+    ========================== */
     const handleDelete = async () => {
+        if (!canDeleteProfile) {
+            toast.error("You are not allowed to delete this profile");
+            return;
+        }
+
         if (profile && (profile.id || profile._id)) {
             const deleted = await deleteProfile(profile.id ?? profile._id);
+
             if (deleted) {
                 toast.success("Profile deleted successfully");
                 router.push("/profile");
@@ -28,17 +71,9 @@ export default function page() {
         }
     };
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            if (stringId && stringId !== "undefined") {
-                await getProfileById(stringId);
-                setFetchAttempted(true);
-            }
-        };
-        fetchProfile();
-    }, [stringId, getProfileById]); // Fixed: use stringId instead of id
-
-    // Show loading state
+    /* =========================
+       LOADING STATE
+    ========================== */
     if (loading || !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -47,7 +82,9 @@ export default function page() {
         );
     }
 
-    // Show error state if no profile found
+    /* =========================
+       NOT FOUND STATE
+    ========================== */
     if (!loading && fetchAttempted && !profile) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -62,10 +99,15 @@ export default function page() {
             </div>
         );
     }
+
+    /* =========================
+       MAIN VIEW
+    ========================== */
     return (
         <section id="bio-hero" className="py-16 bg-white">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid lg:grid-cols-3 gap-12 items-start">
+                    {/* IMAGE */}
                     <div className="lg:col-span-1">
                         <div className="bg-white text-center sticky top-24">
                             <img
@@ -76,11 +118,13 @@ export default function page() {
                         </div>
                     </div>
 
+                    {/* CONTENT */}
                     <div className="lg:col-span-2">
                         <div className="prose prose-lg max-w-none">
                             <h1 className="text-3xl text-light-blue font-bold mb-2">
                                 {profile.name}
                             </h1>
+
                             <p className="text-lg text-neutral-600 font-semibold mb-4">
                                 {profile.position}
                             </p>
@@ -89,27 +133,31 @@ export default function page() {
                                 {profile.bio}
                             </p>
 
-                            <div>
-                                {/* delete button and update button */}
-                                <div className="max-w-4xl mx-auto    flex gap-3">
-                                    <Link
-                                        href={`/profile/edit/${
-                                            profile.id ?? profile._id
-                                        }`}
-                                        className="items-center text-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
-                                    >
-                                        Update
-                                    </Link>
+                            {/* ACTION BUTTONS */}
+                            {(canUpdateProfile || canDeleteProfile) && (
+                                <div className="max-w-4xl mx-auto flex gap-3">
+                                    {canUpdateProfile && (
+                                        <Link
+                                            href={`/profile/edit/${
+                                                profile.id ?? profile._id
+                                            }`}
+                                            className="items-center text-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm"
+                                        >
+                                            Update
+                                        </Link>
+                                    )}
 
-                                    <button
-                                        type="button"
-                                        onClick={() => handleDelete()}
-                                        className="text-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 w-full text-white text-sm"
-                                    >
-                                        Delete
-                                    </button>
+                                    {canDeleteProfile && (
+                                        <button
+                                            type="button"
+                                            onClick={handleDelete}
+                                            className="text-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 w-full text-white text-sm"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>

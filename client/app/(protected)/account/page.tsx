@@ -1,4 +1,5 @@
 "use client";
+
 import {
     Table,
     TableBody,
@@ -11,28 +12,56 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAccountStore } from "@/stores/accountStore";
+import { useAuthStore } from "@/stores/authstore";
 import { useEffect, useState } from "react";
 import LoadingSkeleton from "@/components/loading-comp";
-import Link from "next/link";
 import { RefreshCw } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function AccountsPage() {
+    const router = useRouter();
+
+    /* =========================
+       STORES
+    ========================== */
     const { accounts, fetchAccounts, loading } = useAccountStore();
+    const { user } = useAuthStore();
+
+    /* =========================
+       LOCAL STATE
+    ========================== */
     const [fetchAttempted, setFetchAttempted] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
+    /* =========================
+       PERMISSIONS
+    ========================== */
+    const permissions: string[] = user?.permissions || [];
+
+    const canViewSingleAccount =
+        permissions.includes("update_account") ||
+        permissions.includes("delete_account");
+
+    /* =========================
+       FETCH DATA
+    ========================== */
     useEffect(() => {
         fetchAccounts();
         setFetchAttempted(true);
-    }, []);
+    }, [fetchAccounts]);
 
-    // Handle refresh
+    /* =========================
+       REFRESH
+    ========================== */
     const handleRefresh = async () => {
         setRefreshing(true);
         await fetchAccounts();
         setRefreshing(false);
     };
 
+    /* =========================
+       LOADING
+    ========================== */
     if (loading || !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -44,6 +73,7 @@ export default function AccountsPage() {
     return (
         <main className="container max-w-6xl mx-auto px-6 mt-6">
             <div className="max-w-6xl mx-auto">
+                {/* HEADER */}
                 <div className="mb-8 flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-extrabold text-gray-900">
@@ -53,7 +83,7 @@ export default function AccountsPage() {
                             Manage and view all registered user accounts
                         </p>
                     </div>
-                    {/* Refresh Button */}
+
                     <Button
                         onClick={handleRefresh}
                         disabled={refreshing}
@@ -68,11 +98,13 @@ export default function AccountsPage() {
                     </Button>
                 </div>
 
+                {/* TABLE */}
                 <div className="overflow-hidden">
                     <Table>
                         <TableCaption>
                             A list of all registered user accounts.
                         </TableCaption>
+
                         <TableHeader>
                             <TableRow className="bg-gradient-to-r from-[#152bff] via-[#081bee] to-[#15269a]">
                                 <TableHead className="text-white">#</TableHead>
@@ -93,6 +125,7 @@ export default function AccountsPage() {
                                 </TableHead>
                             </TableRow>
                         </TableHeader>
+
                         <TableBody>
                             {refreshing ? (
                                 <TableRow>
@@ -112,53 +145,76 @@ export default function AccountsPage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                accounts.map((user: any, index: number) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell className="font-medium">
-                                            <Link
-                                                href={`/account/${user.id}`}
-                                                className="hover:underline"
-                                            >
-                                                {user.name}
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                variant={"outline"}
-                                                className="capitalize"
-                                            >
-                                                {user.role}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                variant={
-                                                    user.isActive
-                                                        ? "default"
-                                                        : "destructive"
+                                accounts.map((account: any, index: number) => {
+                                    const isClickable =
+                                        canViewSingleAccount;
+
+                                    return (
+                                        <TableRow
+                                            key={account.id ?? index}
+                                            onClick={() => {
+                                                if (isClickable) {
+                                                    router.push(
+                                                        `/account/${account.id}`
+                                                    );
                                                 }
-                                                className={
-                                                    user.isActive
-                                                        ? "bg-green-600 hover:bg-green-700"
-                                                        : ""
-                                                }
-                                            >
-                                                {user.isActive
-                                                    ? "Active"
-                                                    : "Disabled"}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            {user.lastLogin
-                                                ? new Date(
-                                                      user.lastLogin
-                                                  ).toLocaleString()
-                                                : "Never"}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+                                            }}
+                                            className={
+                                                isClickable
+                                                    ? "cursor-pointer hover:bg-neutral-100 transition"
+                                                    : "cursor-default"
+                                            }
+                                        >
+                                            <TableCell>
+                                                {index + 1}
+                                            </TableCell>
+
+                                            <TableCell className="font-medium">
+                                                {account.name}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {account.email}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="capitalize"
+                                                >
+                                                    {account.role}
+                                                </Badge>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <Badge
+                                                    variant={
+                                                        account.isActive
+                                                            ? "default"
+                                                            : "destructive"
+                                                    }
+                                                    className={
+                                                        account.isActive
+                                                            ? "bg-green-600 hover:bg-green-700"
+                                                            : ""
+                                                    }
+                                                >
+                                                    {account.isActive
+                                                        ? "Active"
+                                                        : "Disabled"}
+                                                </Badge>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {account.lastLogin
+                                                    ? new Date(
+                                                          account.lastLogin
+                                                      ).toLocaleString()
+                                                    : "Never"}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
                             )}
                         </TableBody>
                     </Table>
