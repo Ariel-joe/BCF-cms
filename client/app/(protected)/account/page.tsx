@@ -19,49 +19,33 @@ import { RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function AccountsPage() {
-    const router = useRouter();
-
-    /* =========================
-       STORES
-    ========================== */
     const { accounts, fetchAccounts, loading } = useAccountStore();
     const { user } = useAuthStore();
+    const router = useRouter();
 
-    /* =========================
-       LOCAL STATE
-    ========================== */
     const [fetchAttempted, setFetchAttempted] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
-    /* =========================
-       PERMISSIONS
-    ========================== */
-    const permissions: string[] = user?.permissions || [];
+    const permissions = user?.permissions || [];
 
+    // Only users with all three permissions can view single account details
     const canViewSingleAccount =
-        permissions.includes("update_account") ||
-        permissions.includes("delete_account");
+        permissions.includes("user:read") &&
+        permissions.includes("user:update") &&
+        permissions.includes("user:delete");
 
-    /* =========================
-       FETCH DATA
-    ========================== */
     useEffect(() => {
         fetchAccounts();
         setFetchAttempted(true);
-    }, [fetchAccounts]);
+    }, []);
 
-    /* =========================
-       REFRESH
-    ========================== */
+    // Handle refresh
     const handleRefresh = async () => {
         setRefreshing(true);
         await fetchAccounts();
         setRefreshing(false);
     };
 
-    /* =========================
-       LOADING
-    ========================== */
     if (loading || !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -73,7 +57,6 @@ export default function AccountsPage() {
     return (
         <main className="container max-w-6xl mx-auto px-6 mt-6">
             <div className="max-w-6xl mx-auto">
-                {/* HEADER */}
                 <div className="mb-8 flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-extrabold text-gray-900">
@@ -83,7 +66,6 @@ export default function AccountsPage() {
                             Manage and view all registered user accounts
                         </p>
                     </div>
-
                     <Button
                         onClick={handleRefresh}
                         disabled={refreshing}
@@ -98,34 +80,21 @@ export default function AccountsPage() {
                     </Button>
                 </div>
 
-                {/* TABLE */}
                 <div className="overflow-hidden">
                     <Table>
                         <TableCaption>
                             A list of all registered user accounts.
                         </TableCaption>
-
                         <TableHeader>
                             <TableRow className="bg-gradient-to-r from-[#152bff] via-[#081bee] to-[#15269a]">
                                 <TableHead className="text-white">#</TableHead>
-                                <TableHead className="text-white">
-                                    Name
-                                </TableHead>
-                                <TableHead className="text-white">
-                                    Email
-                                </TableHead>
-                                <TableHead className="text-white">
-                                    Role
-                                </TableHead>
-                                <TableHead className="text-white">
-                                    Status
-                                </TableHead>
-                                <TableHead className="text-white">
-                                    Last Login
-                                </TableHead>
+                                <TableHead className="text-white">Name</TableHead>
+                                <TableHead className="text-white">Email</TableHead>
+                                <TableHead className="text-white">Role</TableHead>
+                                <TableHead className="text-white">Status</TableHead>
+                                <TableHead className="text-white">Last Login</TableHead>
                             </TableRow>
                         </TableHeader>
-
                         <TableBody>
                             {refreshing ? (
                                 <TableRow>
@@ -145,76 +114,43 @@ export default function AccountsPage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                accounts.map((account: any, index: number) => {
-                                    const isClickable =
-                                        canViewSingleAccount;
-
-                                    return (
-                                        <TableRow
-                                            key={account.id ?? index}
-                                            onClick={() => {
-                                                if (isClickable) {
-                                                    router.push(
-                                                        `/account/${account.id}`
-                                                    );
-                                                }
-                                            }}
-                                            className={
-                                                isClickable
-                                                    ? "cursor-pointer hover:bg-neutral-100 transition"
-                                                    : "cursor-default"
+                                accounts.map((userItem: any, index: number) => (
+                                    <TableRow
+                                        key={index}
+                                        className={
+                                            canViewSingleAccount
+                                                ? "cursor-pointer hover:bg-gray-100"
+                                                : ""
+                                        }
+                                        onClick={() => {
+                                            if (canViewSingleAccount) {
+                                                router.push(`/account/${userItem.id}`);
                                             }
-                                        >
-                                            <TableCell>
-                                                {index + 1}
-                                            </TableCell>
-
-                                            <TableCell className="font-medium">
-                                                {account.name}
-                                            </TableCell>
-
-                                            <TableCell>
-                                                {account.email}
-                                            </TableCell>
-
-                                            <TableCell>
-                                                <Badge
-                                                    variant="outline"
-                                                    className="capitalize"
-                                                >
-                                                    {account.role}
-                                                </Badge>
-                                            </TableCell>
-
-                                            <TableCell>
-                                                <Badge
-                                                    variant={
-                                                        account.isActive
-                                                            ? "default"
-                                                            : "destructive"
-                                                    }
-                                                    className={
-                                                        account.isActive
-                                                            ? "bg-green-600 hover:bg-green-700"
-                                                            : ""
-                                                    }
-                                                >
-                                                    {account.isActive
-                                                        ? "Active"
-                                                        : "Disabled"}
-                                                </Badge>
-                                            </TableCell>
-
-                                            <TableCell>
-                                                {account.lastLogin
-                                                    ? new Date(
-                                                          account.lastLogin
-                                                      ).toLocaleString()
-                                                    : "Never"}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
+                                        }}
+                                    >
+                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell className="font-medium">{userItem.name}</TableCell>
+                                        <TableCell>{userItem.email}</TableCell>
+                                        <TableCell>
+                                            <Badge variant={"outline"} className="capitalize">
+                                                {userItem.role}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge
+                                                variant={userItem.isActive ? "default" : "destructive"}
+                                                className={userItem.isActive ? "bg-green-600 hover:bg-green-700" : ""}
+                                            >
+                                                {userItem.isActive ? "Active" : "Disabled"}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            {userItem.lastLogin
+                                                ? new Date(userItem.lastLogin).toLocaleString()
+                                                : "Never"}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
                             )}
                         </TableBody>
                     </Table>
