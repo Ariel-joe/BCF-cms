@@ -143,7 +143,7 @@ export const resetpassTemplate = (resetLink, email) => `
                     <p
                       style="font-size:14px;color:rgb(133,77,14);line-height:20px;margin:0px;margin-top:0px;margin-bottom:0px;margin-left:0px;margin-right:0px">
                       <strong>Security Notice:</strong> This link will expire in
-                      <!-- -->24 hours<!-- -->. If you didn&#x27;t request this
+                      <!-- -->5 minutes<!-- -->. If you didn&#x27;t request this
                       password reset, please ignore this email or contact our
                       support team.
                     </p>
@@ -151,31 +151,7 @@ export const resetpassTemplate = (resetLink, email) => `
                 </tr>
               </tbody>
             </table>
-            <table
-              align="center"
-              width="100%"
-              border="0"
-              cellpadding="0"
-              cellspacing="0"
-              role="presentation"
-              style="margin-bottom:32px">
-              <tbody>
-                <tr>
-                  <td>
-                    <p
-                      style="font-size:14px;color:rgb(75,85,99);line-height:20px;margin-bottom:8px;margin-top:16px">
-                      Need help? Contact our support team at<!-- -->
-                      <a
-                        href="mailto:support@company.com"
-                        style="color:rgb(37,99,235);text-decoration-line:none"
-                        target="_blank"
-                        >support@company.com</a
-                      >
-                    </p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            
             <table
               align="center"
               width="100%"
@@ -189,28 +165,14 @@ export const resetpassTemplate = (resetLink, email) => `
                   <td>
                     <p
                       style="font-size:12px;color:rgb(107,114,128);line-height:16px;margin:0px;margin-top:0px;margin-bottom:0px;margin-left:0px;margin-right:0px">
-                      © 2025 Your Company Name. All rights reserved.
+                      © 2025 Beacon Of Compassion Foundation. All rights reserved.
                     </p>
                     <p
                       style="font-size:12px;color:rgb(107,114,128);line-height:16px;margin:0px;margin-top:0px;margin-bottom:0px;margin-left:0px;margin-right:0px">
-                      123 Business Street, City, State 12345
+                      Bogani Road opposite CUEA,
+St Clares Hostels, Nairobi, Karen
                     </p>
-                    <p
-                      style="font-size:12px;color:rgb(107,114,128);line-height:16px;margin:0px;margin-top:0px;margin-bottom:0px;margin-left:0px;margin-right:0px">
-                      <a
-                        href="#"
-                        style="color:rgb(107,114,128);text-decoration-line:none"
-                        target="_blank"
-                        >Unsubscribe</a
-                      >
-                      <!-- -->|<!-- -->
-                      <a
-                        href="#"
-                        style="color:rgb(107,114,128);text-decoration-line:none"
-                        target="_blank"
-                        >Privacy Policy</a
-                      >
-                    </p>
+                    
                   </td>
                 </tr>
               </tbody>

@@ -91,16 +91,34 @@ export const createWelfare = async (req, res) => {
     }
 };
 
-// fetchall welfare intiatives
+// fetch all welfare initiatives with pagination
 export const getAllWelfares = async (req, res) => {
     try {
-        const welfares = await Welfare.find().populate(
-            "coordinator",
-            "name email"
-        );
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const [welfares, totalWelfares] = await Promise.all([
+            Welfare.find()
+                .populate("coordinator", "name email")
+                .sort({ createdAt: -1 }) // newest first
+                .skip(skip)
+                .limit(limit),
+            Welfare.countDocuments()
+        ]);
+
+        const totalPages = Math.ceil(totalWelfares / limit);
+
         return res.status(StatusCodes.OK).json({
             success: true,
             data: welfares,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalWelfares,
+                hasMore: page < totalPages,
+                limit
+            }
         });
     } catch (error) {
         console.error("Fetch all welfares error:", error);

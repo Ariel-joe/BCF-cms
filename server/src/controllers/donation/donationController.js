@@ -122,20 +122,38 @@ export const verifyDonation = async (req, res) => {
     }
 };
 
-// fetch all donations
+// fetch all donations with pagination
 export const fetchAllDonations = async (req, res) => {
     try {
         const userId = req.user.id;
-
         const loggedInUser = await User.findById(userId);
+        if (!loggedInUser) throw new Error("unauthorized access");
 
-        if (!loggedInUser) throw new Error("unathorized access");
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
 
-        const donations = await Donation.find().sort({ createdAt: -1 });
+        const [donations, totalDonations] = await Promise.all([
+            Donation.find()
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Donation.countDocuments()
+        ]);
+
+        const totalPages = Math.ceil(totalDonations / limit);
+
         return res.status(StatusCodes.OK).json({
             success: true,
             message: "Donations fetched successfully",
             data: donations,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalDonations,
+                hasMore: page < totalPages,
+                limit
+            }
         });
     } catch (error) {
         console.error("Fetch Donations Error:", error);

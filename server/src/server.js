@@ -3,10 +3,10 @@ import "dotenv/config";
 import { connectDb } from "./database/config.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import compression from "compression";
+// import compression from "compression";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import passport from "./controllers/Auth/passport-google.js";
+// import passport from "./controllers/Auth/passport-google.js";
 import { authRouter } from "./routes/v1/authRouter.js";
 import { authMiddleware } from "./middleware/authMiddleware.js";
 import { blogRouter } from "./routes/v1/blogRouter.js";
@@ -26,7 +26,7 @@ app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-    origin: [process.env.CLIENT_URL, process.env.WEBSITE_URL, "http://10.146.164.100:5173"],
+    origin: [process.env.CLIENT_URL, process.env.WEBSITE_URL],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -60,9 +60,9 @@ app.use(
     })
 );
 
-// Initialize passport
-app.use(passport.initialize());
-app.use(passport.session());
+// // Initialize passport
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // public routers
 app.use("/api/v1", donationRouter);
@@ -80,19 +80,19 @@ app.use(
     roleRouter
 );
 
-// Passport Google OAuth routes
-app.get(
-    "/auth/google",
-    passport.authenticate("google", { scope: ["profile", "email"] })
-);
+// // Passport Google OAuth routes
+// app.get(
+//     "/auth/google",
+//     passport.authenticate("google", { scope: ["profile", "email"] })
+// );
 
-app.get(
-    "/auth/google/callback",
-    passport.authenticate("google", {
-        failureRedirect: "/auth/signin?error=oauth",
-        successRedirect: "/",
-    })
-);
+// app.get(
+//     "/auth/google/callback",
+//     passport.authenticate("google", {
+//         failureRedirect: "/auth/signin?error=oauth",
+//         successRedirect: "/",
+//     })
+// );
 
 app.get("/", (req, res) => {
     res.json({
@@ -100,6 +100,6 @@ app.get("/", (req, res) => {
     });
 });
 
-app.listen(3500, () => {
-    console.log("server running on port 3500");
+app.listen(process.env.PORT, () => {
+    console.log("server running on port " + process.env.PORT);
 });

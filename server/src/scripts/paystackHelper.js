@@ -27,7 +27,7 @@ export const initializePaystackTransaction = ({
                     },
                 ],
             },
-            callback_url: `${process.env.FRONTEND_URL}/donation/success`,
+            callback_url: `${process.env.WEBSITE_URL}/donation/success`,
         });
 
         const options = {

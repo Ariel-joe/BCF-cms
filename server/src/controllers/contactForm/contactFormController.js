@@ -37,13 +37,33 @@ export const submitContactForm = async (req, res) => {
     }
 };
 
-// fetch all form submissions
+// fetch all form submissions with pagination
 export const getAllFormSubmissions = async (req, res) => {
     try {
-        const contactForms = await ContactForm.find().sort({ createdAt: -1 });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const [contactForms, totalSubmissions] = await Promise.all([
+            ContactForm.find()
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            ContactForm.countDocuments()
+        ]);
+
+        const totalPages = Math.ceil(totalSubmissions / limit);
+
         return res.status(StatusCodes.OK).json({
             success: true,
             data: contactForms,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalSubmissions,
+                hasMore: page < totalPages,
+                limit
+            }
         });
     } catch (error) {
         console.error("Error fetching contact forms:", error);

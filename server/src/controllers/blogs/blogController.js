@@ -94,13 +94,35 @@ export const createBlog = async (req, res) => {
     }
 };
 
-// fetch all blogs
+
+// fetch all blogs with pagination
 export const allBlogs = async (req, res) => {
     try {
-        const blogs = await Blog.find().populate("author", "name email");
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const [blogs, totalBlogs] = await Promise.all([
+            Blog.find()
+                .populate("author", "name email")
+                .sort({ createdAt: -1 }) // newest first
+                .skip(skip)
+                .limit(limit),
+            Blog.countDocuments()
+        ]);
+
+        const totalPages = Math.ceil(totalBlogs / limit);
+
         return res.status(StatusCodes.OK).json({
             success: true,
             data: blogs,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalBlogs,
+                hasMore: page < totalPages,
+                limit
+            }
         });
     } catch (error) {
         console.error("Fetch all blogs error:", error);
