@@ -7,10 +7,7 @@ export const Signup = async (req, res) => {
     try {
         const { email, password, name, phone, role, isActive } = req.body;
 
-        console.log("req cookies", req.cookies);
-
-        const hashedPassword = await hash(password, 10);
-
+        // Validate role exists
         const userRole = await Role.findById(role);
         if (!userRole) {
             return res.status(StatusCodes.BAD_REQUEST).json({
@@ -18,25 +15,35 @@ export const Signup = async (req, res) => {
                 message: "Invalid role specified",
             });
         }
+
+        // Check if role is already assigned
+        const existingUser = await User.findOne({ role: userRole.slug });
+        if (existingUser) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                success: false,
+                message: "Role is already assigned to another user",
+            });
+        }
+
+        const hashedPassword = await hash(password, 10);
+
         const userInfo = {
             email,
             password: hashedPassword,
             name,
             phone,
             role: userRole.slug,
-            isActive
+            isActive,
         };
 
-        const newUser = await User.create(userInfo);
-
-        // Optional: send a welcoming email to the created acount
+        await User.create(userInfo);
 
         res.status(StatusCodes.CREATED).json({
             success: true,
             message: "Account created successfully!",
         });
     } catch (error) {
-        console.error(error);
+        console.error("Signup Error:", error);
 
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             success: false,

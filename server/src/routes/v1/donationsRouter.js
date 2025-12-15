@@ -5,8 +5,8 @@ import {
     fetchAllDonations,
 } from "../../controllers/donation/donationController.js";
 import { authMiddleware } from "../../middleware/authMiddleware.js";
-
-
+import { permissionLoader } from "../../middleware/permissionMiddleware.js";
+import { checkPermission } from "../../middleware/rbacMiddleware.js";
 
 const donationRouter = Router();
 
@@ -17,6 +17,8 @@ donationRouter.get("/donation/verify/:reference", verifyDonation);
 donationRouter.get(
     "/donations",
     authMiddleware,
+    permissionLoader,
+    checkPermission("finance:read"), // only users with finance:read can access
     fetchAllDonations
 );
 
