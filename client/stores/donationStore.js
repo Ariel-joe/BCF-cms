@@ -1,16 +1,16 @@
 import { create } from "zustand";
 
-const useFormSubmissionStore = create((set) => ({
-    submissions: [],
-    submissionData: null,
+const useDonationStore = create((set) => ({
+    donations: [],
+    donationData: null,
     loading: false,
     pagination: null,
     
-    getSubmissions: async (page = 1) => {
+    getDonations: async (page = 1) => {
         set({ loading: true });
         try {
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/form?page=${page}&limit=10`,
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/donations?page=${page}&limit=10`,
                 {
                     method: "GET",
                     headers: {
@@ -22,24 +22,24 @@ const useFormSubmissionStore = create((set) => ({
             if (res.ok) {
                 const response = await res.json();
                 set({ 
-                    submissions: response.data, 
+                    donations: response.data, 
                     pagination: response.pagination,
                     loading: false 
                 });
             } else {
-                set({ submissions: [], pagination: null, loading: false });
+                set({ donations: [], pagination: null, loading: false });
             }
         } catch (error) {
-            set({ submissions: [], pagination: null, loading: false });
+            set({ donations: [], pagination: null, loading: false });
             console.error(error);
         }
     },
     
-    getSubmissionById: async (id) => {
+    getDonationById: async (id) => {
         try {
             set({ loading: true });
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/form/${id}`,
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/donations/${id}`,
                 {
                     method: "GET",
                     headers: {
@@ -50,18 +50,18 @@ const useFormSubmissionStore = create((set) => ({
             );
             if (res.ok) {
                 const { data } = await res.json();
-                set({ submissionData: data, loading: false });
+                set({ donationData: data, loading: false });
                 return { ok: true, data };
             } else {
-                set({ submissionData: null, loading: false });
+                set({ donationData: null, loading: false });
                 return { ok: false };
             }
         } catch (error) {
-            set({ submissionData: null, loading: false });
+            set({ donationData: null, loading: false });
             console.error(error);
             return { ok: false };
         }
     },
 }));
 
-export { useFormSubmissionStore };
+export { useDonationStore };

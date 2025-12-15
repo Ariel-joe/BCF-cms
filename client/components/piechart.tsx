@@ -38,7 +38,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartPieLabelList({ donations }: { donations: any[] }) {
-    const [timeRange, setTimeRange] = React.useState("7days");
+    const [timeRange, setTimeRange] = React.useState("30days");
 
     const chartData = React.useMemo(() => {
         const now = new Date();

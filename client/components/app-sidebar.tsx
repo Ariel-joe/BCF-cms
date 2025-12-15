@@ -3,15 +3,9 @@
 import * as React from "react";
 import {
     IconChartBar,
-    IconDashboard,
     IconDatabase,
-    IconHelp,
-    IconInnerShadowTop,
     IconListDetails,
-    IconSearch,
-    IconSettings,
     IconUserCircle,
-    IconShieldLock,
     IconFiles,
 } from "@tabler/icons-react";
 
@@ -23,21 +17,32 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { UserLock } from "lucide-react";
-import Link from "next/link";
 
+import Link from "next/link";
+import { useAuthStore } from "@/stores/authstore";
+
+/* ------------------------------------------------------
+   Permission helper
+------------------------------------------------------ */
+const hasPermission = (
+    permissions: string[] = [],
+    required: string | string[]
+) => {
+    if (!permissions?.length) return false;
+
+    if (Array.isArray(required)) {
+        return required.some((p) => permissions.includes(p));
+    }
+
+    return permissions.includes(required);
+};
+
+/* ------------------------------------------------------
+   Sidebar data (UNCHANGED)
+------------------------------------------------------ */
 const data = {
     navMain: [
-        // {
-        //     title: "Dashboard",
-        //     url: "/dashboard",
-        //     icon: IconDashboard,
-        // },
-
         {
             title: "Donations",
             url: "/donations",
@@ -50,23 +55,6 @@ const data = {
         },
     ],
 
-    navSecondary: [
-        {
-            title: "Settings",
-            url: "#",
-            icon: IconSettings,
-        },
-        {
-            title: "Get Help",
-            url: "#",
-            icon: IconHelp,
-        },
-        {
-            title: "Search",
-            url: "#",
-            icon: IconSearch,
-        },
-    ],
     blogSection: [
         {
             name: "Publish Blog & Update",
@@ -78,12 +66,8 @@ const data = {
             url: "/blog",
             icon: IconDatabase,
         },
-        // {
-        //     name: "Drafts",
-        //     url: "#",
-        //     icon: IconReport,
-        // },
     ],
+
     welfareSection: [
         {
             name: "Publish Welfare Updates",
@@ -95,12 +79,8 @@ const data = {
             url: "/welfare",
             icon: IconDatabase,
         },
-        // {
-        //     name: "Drafts",
-        //     url: "#",
-        //     icon: IconReport,
-        // },
     ],
+
     profileSection: [
         {
             name: "Profile List",
@@ -113,6 +93,7 @@ const data = {
             icon: IconUserCircle,
         },
     ],
+
     userSection: [
         {
             name: "Accounts List",
@@ -127,27 +108,125 @@ const data = {
     ],
 };
 
+/* ------------------------------------------------------
+   Sidebar component
+------------------------------------------------------ */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const user = useAuthStore((state) => state.user);
+    const permissions = user?.permissions || [];
+
     return (
         <Sidebar collapsible="offcanvas" {...props}>
             <SidebarHeader>
                 <Link href="/donations">
                     <img
-                        src={"/bcf-logo-nobg.png"}
+                        src="/bcf-logo-nobg.png"
                         width={200}
                         height={100}
                         alt="BCF Logo"
                     />
                 </Link>
             </SidebarHeader>
+
             <SidebarContent>
+                {/* Main navigation */}
                 <NavMain items={data.navMain} />
-                <NavDocuments title="Blogs" items={data.blogSection} />
-                <NavDocuments title="Welfares" items={data.welfareSection} />
-                <NavDocuments title="Profiles" items={data.profileSection} />
-                <NavDocuments title="Users" items={data.userSection} />
-                {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+
+                {/* Blogs */}
+                {hasPermission(permissions, ["blog:read", "blog:create"]) && (
+                    <NavDocuments
+                        title="Blogs"
+                        items={data.blogSection.filter((item) => {
+                            if (item.url === "/blog/create") {
+                                return hasPermission(
+                                    permissions,
+                                    "blog:create"
+                                );
+                            }
+                            if (item.url === "/blog") {
+                                return hasPermission(
+                                    permissions,
+                                    "blog:read"
+                                );
+                            }
+                            return false;
+                        })}
+                    />
+                )}
+
+                {/* Welfares */}
+                {hasPermission(
+                    permissions,
+                    ["welfare:read", "welfare:create"]
+                ) && (
+                    <NavDocuments
+                        title="Welfares"
+                        items={data.welfareSection.filter((item) => {
+                            if (item.url === "/welfare/create") {
+                                return hasPermission(
+                                    permissions,
+                                    "welfare:create"
+                                );
+                            }
+                            if (item.url === "/welfare") {
+                                return hasPermission(
+                                    permissions,
+                                    "welfare:read"
+                                );
+                            }
+                            return false;
+                        })}
+                    />
+                )}
+
+                {/* Profiles */}
+                {hasPermission(
+                    permissions,
+                    ["profile:read", "profile:create"]
+                ) && (
+                    <NavDocuments
+                        title="Profiles"
+                        items={data.profileSection.filter((item) => {
+                            if (item.url === "/profile/create") {
+                                return hasPermission(
+                                    permissions,
+                                    "profile:create"
+                                );
+                            }
+                            if (item.url === "/profile") {
+                                return hasPermission(
+                                    permissions,
+                                    "profile:read"
+                                );
+                            }
+                            return false;
+                        })}
+                    />
+                )}
+
+                {/* Users (President / Admin level) */}
+                {hasPermission(permissions, ["user:read", "user:create"]) && (
+                    <NavDocuments
+                        title="Users"
+                        items={data.userSection.filter((item) => {
+                            if (item.url === "/account/create") {
+                                return hasPermission(
+                                    permissions,
+                                    "user:create"
+                                );
+                            }
+                            if (item.url === "/account") {
+                                return hasPermission(
+                                    permissions,
+                                    "user:read"
+                                );
+                            }
+                            return false;
+                        })}
+                    />
+                )}
             </SidebarContent>
+
             <SidebarFooter>
                 <NavUser />
             </SidebarFooter>

@@ -21,39 +21,40 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function FormSubmissionsPage() {
-    const { submissions, getSubmissions, loading } = useFormSubmissionStore();
-    const [fetchAttempted, setFetchAttempted] = React.useState(false);
+    const { submissions, getSubmissions, loading, pagination } = useFormSubmissionStore();
+    const [fetchAttempted, setFetchAttempted] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterCategory, setFilterCategory] = useState("all");
     const [refreshing, setRefreshing] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
     const router = useRouter();
 
     useEffect(() => {
-        getSubmissions();
+        getSubmissions(1);
         setFetchAttempted(true);
-    }, [getSubmissions]);
+    }, []);
 
     // Handle refresh
     const handleRefresh = async () => {
         setRefreshing(true);
-        await getSubmissions();
+        await getSubmissions(currentPage);
         setRefreshing(false);
+    };
+
+    // Handle page change
+    const handlePageChange = async (newPage: number) => {
+        setCurrentPage(newPage);
+        await getSubmissions(newPage);
     };
 
     // Format date with today/yesterday logic
     const formatDate = (dateString: string) => {
-        // Parse the MongoDB date string
         const date = new Date(dateString);
         const now = new Date();
 
-        // Calculate the difference in days
-        const diffTime = now.getTime() - date.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        // Get the date parts in local timezone for more accurate comparison
         const dateDay = date.toLocaleDateString();
         const todayDay = now.toLocaleDateString();
         const yesterday = new Date(now);
@@ -75,7 +76,6 @@ export default function FormSubmissionsPage() {
 
     // Filter submissions based on search and category
     const filteredSubmissions = submissions.filter((submission: any) => {
-        // Search filter
         const matchesSearch =
             searchQuery === "" ||
             submission.FName.toLowerCase().includes(
@@ -94,7 +94,6 @@ export default function FormSubmissionsPage() {
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase());
 
-        // Category filter
         const matchesCategory =
             filterCategory === "all" ||
             submission.subject.toLowerCase() === filterCategory.toLowerCase();
@@ -102,7 +101,32 @@ export default function FormSubmissionsPage() {
         return matchesSearch && matchesCategory;
     });
 
-    if (loading || !fetchAttempted) {
+    // Generate page numbers for pagination
+    const getPageNumbers = () => {
+        if (!pagination) return [];
+        
+        const pages = [];
+        const totalPages = pagination.totalPages;
+        const current = pagination.currentPage;
+        
+        // Always show first page
+        pages.push(1);
+        
+        // Show pages around current page
+        for (let i = Math.max(2, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
+            pages.push(i);
+        }
+        
+        // Always show last page if there's more than 1 page
+        if (totalPages > 1) {
+            pages.push(totalPages);
+        }
+        
+        // Remove duplicates and sort
+        return [...new Set(pages)].sort((a, b) => a - b);
+    };
+
+    if (loading && !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <LoadingSkeleton />
@@ -124,9 +148,9 @@ export default function FormSubmissionsPage() {
                     </div>
                     <div className="text-sm text-gray-500">
                         <span>
-                            Showing {filteredSubmissions.length} of{" "}
-                            {submissions.length}{" "}
-                            {submissions.length === 1 ? "message" : "messages"}
+                            Showing {submissions.length} of{" "}
+                            {pagination?.totalSubmissions || 0}{" "}
+                            {pagination?.totalSubmissions === 1 ? "message" : "messages"}
                         </span>
                     </div>
                 </div>
@@ -211,7 +235,7 @@ export default function FormSubmissionsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {refreshing ? (
+                        {refreshing || loading ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="h-64">
                                     <div className="flex items-center justify-center">
@@ -279,6 +303,64 @@ export default function FormSubmissionsPage() {
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Pagination Controls */}
+            {pagination && pagination.totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-between">
+                    <div className="text-sm text-gray-600">
+                        Page {pagination.currentPage} of {pagination.totalPages}
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        {/* Previous Button */}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1 || loading}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                        </Button>
+
+                        {/* Page Numbers */}
+                        <div className="flex gap-1">
+                            {getPageNumbers().map((pageNum, idx, arr) => {
+                                // Add ellipsis if there's a gap
+                                const showEllipsisBefore = idx > 0 && pageNum - arr[idx - 1] > 1;
+                                
+                                return (
+                                    <React.Fragment key={pageNum}>
+                                        {showEllipsisBefore && (
+                                            <span className="px-3 py-2 text-gray-500">...</span>
+                                        )}
+                                        <Button
+                                            variant={currentPage === pageNum ? "default" : "outline"}
+                                            size="sm"
+                                            onClick={() => handlePageChange(pageNum)}
+                                            disabled={loading}
+                                            className={currentPage === pageNum ? "bg-blue-600 hover:bg-blue-700" : ""}
+                                        >
+                                            {pageNum}
+                                        </Button>
+                                    </React.Fragment>
+                                );
+                            })}
+                        </div>
+
+                        {/* Next Button */}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === pagination.totalPages || loading}
+                        >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

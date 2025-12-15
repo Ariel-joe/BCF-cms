@@ -33,6 +33,8 @@ export function NavUser() {
     const { user, logout } = useAuthStore();
     const router = useRouter();
 
+   
+
     const handleLogout = async () => {
         const loginout = await logout();
 

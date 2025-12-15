@@ -20,36 +20,27 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import LoadingSkeleton from "@/components/loading-comp";
+import { useDonationStore } from "@/stores/donationStore";
 
 export default function DashboardPage() {
-    const [donations, setDonations] = useState([]);
+    const { donations, getDonations, loading, pagination } = useDonationStore();
+    const [fetchAttempted, setFetchAttempted] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterMethod, setFilterMethod] = useState("all");
-    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        fetchDonations();
+        getDonations(1);
+        setFetchAttempted(true);
     }, []);
 
-    const fetchDonations = async () => {
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/donations`,
-                {
-                    credentials: "include",
-                }
-            );
-            const data = await response.json();
-            if (data.success) {
-                setDonations(data.data || []);
-            }
-        } catch (error) {
-            console.error("Error fetching donations:", error);
-        } finally {
-            setLoading(false);
-        }
+    // Handle page change
+    const handlePageChange = async (newPage: number) => {
+        setCurrentPage(newPage);
+        await getDonations(newPage);
     };
 
     // Filter donations
@@ -87,7 +78,32 @@ export default function DashboardPage() {
         });
     };
 
-    if (loading) {
+    // Generate page numbers for pagination
+    const getPageNumbers = () => {
+        if (!pagination) return [];
+        
+        const pages = [];
+        const totalPages = pagination.totalPages;
+        const current = pagination.currentPage;
+        
+        // Always show first page
+        pages.push(1);
+        
+        // Show pages around current page
+        for (let i = Math.max(2, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
+            pages.push(i);
+        }
+        
+        // Always show last page if there's more than 1 page
+        if (totalPages > 1) {
+            pages.push(totalPages);
+        }
+        
+        // Remove duplicates and sort
+        return [...new Set(pages)].sort((a, b) => a - b);
+    };
+
+    if (loading && !fetchAttempted) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <LoadingSkeleton />
@@ -162,8 +178,8 @@ export default function DashboardPage() {
                 <div className="overflow-hidden">
                     <Table>
                         <TableCaption>
-                            Showing {filteredDonations.length} of{" "}
-                            {donations.length} transactions
+                            Showing {donations.length} of{" "}
+                            {pagination?.totalDonations || 0} transactions
                         </TableCaption>
                         <TableHeader>
                             <TableRow className="bg-gradient-to-r from-[#009689] to-[#0a655f]">
@@ -192,7 +208,15 @@ export default function DashboardPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredDonations.length === 0 ? (
+                            {loading ? (
+                                <TableRow>
+                                    <TableCell colSpan={8} className="h-64">
+                                        <div className="flex items-center justify-center">
+                                            <LoadingSkeleton />
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ) : filteredDonations.length === 0 ? (
                                 <TableRow>
                                     <TableCell
                                         colSpan={8}
@@ -211,7 +235,7 @@ export default function DashboardPage() {
                                             className="hover:bg-gray-50"
                                         >
                                             <TableCell className="font-medium">
-                                                {index + 1}
+                                                {(currentPage - 1) * 10 + index + 1}
                                             </TableCell>
                                             <TableCell>
                                                 {donation.fullName}
@@ -249,6 +273,64 @@ export default function DashboardPage() {
                         </TableBody>
                     </Table>
                 </div>
+
+                {/* Pagination Controls */}
+                {pagination && pagination.totalPages > 1 && (
+                    <div className="mt-6 flex items-center justify-between">
+                        <div className="text-sm text-gray-600">
+                            Page {pagination.currentPage} of {pagination.totalPages}
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                            {/* Previous Button */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1 || loading}
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                                Previous
+                            </Button>
+
+                            {/* Page Numbers */}
+                            <div className="flex gap-1">
+                                {getPageNumbers().map((pageNum, idx, arr) => {
+                                    // Add ellipsis if there's a gap
+                                    const showEllipsisBefore = idx > 0 && pageNum - arr[idx - 1] > 1;
+                                    
+                                    return (
+                                        <React.Fragment key={pageNum}>
+                                            {showEllipsisBefore && (
+                                                <span className="px-3 py-2 text-gray-500">...</span>
+                                            )}
+                                            <Button
+                                                variant={currentPage === pageNum ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => handlePageChange(pageNum)}
+                                                disabled={loading}
+                                                className={currentPage === pageNum ? "bg-[#009689] hover:bg-[#0a655f]" : ""}
+                                            >
+                                                {pageNum}
+                                            </Button>
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Next Button */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === pagination.totalPages || loading}
+                            >
+                                Next
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

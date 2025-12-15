@@ -30,7 +30,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartBarInteractive({ donations }: { donations: any[] }) {
-    const [timeRange, setTimeRange] = React.useState("7days");
+    const [timeRange, setTimeRange] = React.useState("30days");
 
     const filteredData = React.useMemo(() => {
         const now = new Date();
