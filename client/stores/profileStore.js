@@ -6,6 +6,8 @@ const useProfileStore = create((set) => ({
     profilesData: [],
 
     createProfile: async (payload) => {
+        set({ loading: true }); // SET LOADING IMMEDIATELY
+        
         try {
             const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/profile/create`;
             let res;
@@ -29,24 +31,34 @@ const useProfileStore = create((set) => ({
                     const fd = new FormData();
                     if (payload.name) fd.append("name", payload.name);
                     if (payload.bio) fd.append("bio", payload.bio);
-                }
-                if (payload.position) fd.append("position", payload.position);
-                if (payload.slug) fd.append("slug", payload.slug);
+                    if (payload.position) fd.append("position", payload.position);
+                    if (payload.slug) fd.append("slug", payload.slug);
 
-                // Files: use the field name your server expects: 'image'
-                if (
-                    payload.profileImage &&
-                    payload.profileImage instanceof File
-                ) {
-                    fd.append("image", payload.profileImage);
-                }
+                    // Files: use the field name your server expects: 'image'
+                    if (
+                        payload.profileImage &&
+                        payload.profileImage instanceof File
+                    ) {
+                        fd.append("image", payload.profileImage);
+                    }
 
-                res = await fetch(url, {
-                    method: "POST",
-                    body: fd,
-                    credentials: "include",
-                });
+                    res = await fetch(url, {
+                        method: "POST",
+                        body: fd,
+                        credentials: "include",
+                    });
+                } else {
+                    res = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(payload),
+                        credentials: "include",
+                    });
+                }
             }
+            
             const contentType = res.headers.get("content-type") || "";
             let json = {};
             if (contentType.includes("application/json")) {
@@ -61,12 +73,15 @@ const useProfileStore = create((set) => ({
             }
 
             if (!res.ok) {
+                set({ loading: false });
                 return { ok: false, status: res.status, ...json };
             }
 
+            set({ loading: false });
             return { ok: true, status: res.status, ...json };
         } catch (error) {
             console.error(error);
+            set({ loading: false });
             return {
                 ok: false,
                 status: 0,
@@ -140,8 +155,9 @@ const useProfileStore = create((set) => ({
     },
 
     updateProfile: async (id, payload) => {
+        set({ loading: true }); // SET LOADING IMMEDIATELY
+        
         try {
-            set({ loading: true });
             const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/profile/update/${id}`;
             let res;
             if (
@@ -162,21 +178,31 @@ const useProfileStore = create((set) => ({
                     const fd = new FormData();
                     if (payload.name) fd.append("name", payload.name);
                     if (payload.bio) fd.append("bio", payload.bio);
+                    if (payload.position) fd.append("position", payload.position);
+                    if (payload.slug) fd.append("slug", payload.slug);
+                    if (
+                        payload.profileImage &&
+                        payload.profileImage instanceof File
+                    ) {
+                        fd.append("image", payload.profileImage);
+                    }
+                    res = await fetch(url, {
+                        method: "PUT",
+                        body: fd,
+                        credentials: "include",
+                    });
+                } else {
+                    res = await fetch(url, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(payload),
+                        credentials: "include",
+                    });
                 }
-                if (payload.position) fd.append("position", payload.position);
-                if (payload.slug) fd.append("slug", payload.slug);
-                if (
-                    payload.profileImage &&
-                    payload.profileImage instanceof File
-                ) {
-                    fd.append("image", payload.profileImage);
-                }
-                res = await fetch(url, {
-                    method: "PUT",
-                    body: fd,
-                    credentials: "include",
-                });
             }
+            
             if (res.ok) {
                 const response = await res.json();
                 set({ profile: response?.data || null, loading: false });

@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -35,8 +35,12 @@ interface ProfileFormData {
 }
 
 export function ProfileForm() {
-    const { loading, createProfile } = useProfileStore();
-    const router = useRouter()
+    const { createProfile } = useProfileStore();
+    const router = useRouter();
+    
+    // Use a ref to track submission status - refs update synchronously
+    const isSubmittingRef = useRef(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState<ProfileFormData>({
         name: "",
@@ -69,6 +73,12 @@ export function ProfileForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Use ref for synchronous check - this prevents race conditions
+        if (isSubmittingRef.current) {
+            console.log("Already submitting, ignoring duplicate click");
+            return;
+        }
+
         // Validate required fields
         if (!formData.name.trim()) {
             toast.warning("Please enter a name");
@@ -90,30 +100,43 @@ export function ProfileForm() {
             return;
         }
 
-        // Build FormData
-        const fd = new FormData();
-        fd.append("name", formData.name.trim());
-        fd.append("position", formData.position.trim());
-        fd.append("slug", formData.slug);
-        fd.append("bio", formData.bio.trim());
-        fd.append("image", formData.image);
+        // Set both ref (synchronous) and state (for UI)
+        isSubmittingRef.current = true;
+        setIsSubmitting(true);
 
-        const result = await createProfile(fd);
+        try {
+            // Build FormData
+            const fd = new FormData();
+            fd.append("name", formData.name.trim());
+            fd.append("position", formData.position.trim());
+            fd.append("slug", formData.slug);
+            fd.append("bio", formData.bio.trim());
+            fd.append("image", formData.image);
 
-        if (result && result.ok) {
-            toast.success("Profile created successfully!");
-            router.push('/profile');
-            // Reset form
-            setFormData({
-                name: "",
-                position: "",
-                slug: "",
-                bio: "",
-                image: null,
-                imagePreview: null,
-            });
-        } else {
-            toast.error(result?.message || "Failed to create profile");
+            const result = await createProfile(fd);
+
+            if (result && result.ok) {
+                toast.success("Profile created successfully!");
+                router.push('/profile');
+                // Reset form
+                setFormData({
+                    name: "",
+                    position: "",
+                    slug: "",
+                    bio: "",
+                    image: null,
+                    imagePreview: null,
+                });
+            } else {
+                toast.error(result?.message || "Failed to create profile");
+            }
+        } catch (error) {
+            console.error("Submit error:", error);
+            toast.error("An error occurred while creating the profile");
+        } finally {
+            // Reset both ref and state
+            isSubmittingRef.current = false;
+            setIsSubmitting(false);
         }
     };
 
@@ -152,6 +175,7 @@ export function ProfileForm() {
                                     value={formData.name}
                                     onChange={handleNameChange}
                                     className="mt-2"
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -163,6 +187,7 @@ export function ProfileForm() {
                                     value={formData.position}
                                     onChange={handlePositionChange}
                                     className="mt-2"
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -171,6 +196,7 @@ export function ProfileForm() {
                                 <Select
                                     value={formData.slug}
                                     onValueChange={handleSlugChange}
+                                    disabled={isSubmitting}
                                 >
                                     <SelectTrigger
                                         id="slug"
@@ -209,6 +235,7 @@ export function ProfileForm() {
                         onChange={handleBioChange}
                         rows={5}
                         className="rounded-none"
+                        disabled={isSubmitting}
                     />
                 </CardContent>
             </Card>
@@ -218,9 +245,9 @@ export function ProfileForm() {
                 <Button
                     type="submit"
                     className="px-8 bg-button-blue hover:bg-light-blue"
-                    disabled={loading}
+                    disabled={isSubmitting}
                 >
-                    {loading ? "Creating..." : "Create Profile"}
+                    {isSubmitting ? "Creating..." : "Create Profile"}
                 </Button>
             </div>
         </form>
