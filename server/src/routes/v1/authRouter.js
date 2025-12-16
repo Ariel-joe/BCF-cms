@@ -13,9 +13,9 @@ const authRouter = Router();
 // Only users with "user:create" can make a signup (create account)
 authRouter.post(
     "/auth/signup",
-    authMiddleware,
-    permissionLoader,
-    checkPermission("user:create"),
+    // authMiddleware,
+    // permissionLoader,
+    // checkPermission("user:create"),
     Signup
 );
 
