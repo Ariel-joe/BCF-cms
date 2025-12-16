@@ -33,8 +33,8 @@ export default function Page() {
     ========================== */
     const permissions: string[] = user?.permissions || [];
 
-    const canUpdateProfile = permissions.includes("update_profile");
-    const canDeleteProfile = permissions.includes("delete_profile");
+    const canUpdateProfile = permissions.includes("profile:update");
+    const canDeleteProfile = permissions.includes("profile:delete");
 
     /* =========================
        FETCH PROFILE

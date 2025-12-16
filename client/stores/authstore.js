@@ -21,7 +21,6 @@ const useAuthStore = create(
 
                     if (res.ok && json?.data) {
                         set({ user: json.data, session: null });
-                        console.log(json.data);
                     }
 
 

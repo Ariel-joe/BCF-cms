@@ -42,7 +42,6 @@ export default function EditProfileForm() {
         updateProfile,
     } = useProfileStore();
     const [fetchAttempted, setFetchAttempted] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
 
     const [formData, setFormData] = useState<ProfileFormData>({
         name: "",
@@ -134,7 +133,6 @@ export default function EditProfileForm() {
             fd.append("image", formData.image);
         }
 
-        setSubmitting(true);
         try {
             const result = await updateProfile(stringId, fd);
 
@@ -147,8 +145,6 @@ export default function EditProfileForm() {
         } catch (error) {
             console.error("Update error:", error);
             toast.error("Failed to update profile. Please try again.");
-        } finally {
-            setSubmitting(false);
         }
     };
 
@@ -287,16 +283,16 @@ export default function EditProfileForm() {
                     type="button"
                     variant="outline"
                     onClick={() => router.push("/profile")}
-                    disabled={submitting}
+                    disabled={storeLoading}
                 >
                     Cancel
                 </Button>
                 <Button
                     type="submit"
                     className="px-8 bg-button-blue hover:bg-light-blue"
-                    disabled={submitting}
+                    disabled={storeLoading}
                 >
-                    {submitting ? "Updating..." : "Update Profile"}
+                    {storeLoading ? "Updating..." : "Update Profile"}
                 </Button>
             </div>
         </form>

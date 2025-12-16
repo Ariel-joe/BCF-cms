@@ -65,10 +65,9 @@ export function CreateAccountForm() {
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { loading, fetchRoles, roles } = useRoleStore();
-    const { createAccount } = useAccountStore();
+    const { createAccount, loading: creatingAccount } = useAccountStore();
     const router = useRouter();
 
     // Simulate fetching roles from server
@@ -115,7 +114,7 @@ export function CreateAccountForm() {
             return;
         }
 
-        setIsSubmitting(true);
+       
 
         const accountData = {
             name: formData.name,
@@ -127,7 +126,6 @@ export function CreateAccountForm() {
 
         const success = await createAccount(accountData);
 
-        console.log("Account Created:", accountData);
 
         if (success) {
             toast.success("Account created successfully!");
@@ -145,7 +143,7 @@ export function CreateAccountForm() {
             toast.error("Failed to create account.");
         }
 
-        setIsSubmitting(false);
+        
     };
 
     const handleInputChange = (
@@ -342,10 +340,10 @@ export function CreateAccountForm() {
                         </Link>
                         <Button
                             type="submit"
-                            disabled={isSubmitting}
+                            disabled={creatingAccount}
                             className="bg-btn-view"
                         >
-                            {isSubmitting ? "Creating..." : "Create Account"}
+                            {creatingAccount ? "Creating..." : "Create Account"}
                         </Button>
                     </div>
                 </CardContent>

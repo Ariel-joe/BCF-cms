@@ -60,7 +60,6 @@ export default function EditAccountForm() {
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [fetchAttempted, setFetchAttempted] = useState(false);
 
     const { loading: rolesLoading, fetchRoles, roles } = useRoleStore();
@@ -137,7 +136,6 @@ export default function EditAccountForm() {
             return;
         }
 
-        setIsSubmitting(true);
 
         const accountDetails = {
             name: formData.name,
@@ -155,7 +153,7 @@ export default function EditAccountForm() {
             toast.error("Failed to update account.");
         }
 
-        setIsSubmitting(false);
+
     };
 
     const handleInputChange = (
@@ -345,16 +343,16 @@ export default function EditAccountForm() {
                                 onClick={() =>
                                     router.push(`/account/${stringId}`)
                                 }
-                                disabled={isSubmitting}
+                                disabled={accountLoading}
                             >
                                 Cancel
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={isSubmitting}
+                                disabled={accountLoading}
                                 className="bg-button-blue hover:bg-light-blue"
                             >
-                                {isSubmitting
+                                {accountLoading
                                     ? "Updating..."
                                     : "Update Account"}
                             </Button>
